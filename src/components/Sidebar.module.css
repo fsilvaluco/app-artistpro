@@ -62,6 +62,45 @@
   background: var(--bg);
   color: var(--text);
 }
+.menuGroup {
+  margin-bottom: 12px;
+}
+.menuButton {
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text2);
+  font-size: 16px;
+  text-align: left;
+  padding: 8px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: background 0.15s;
+}
+.menuButton:hover {
+  background: #2221;
+  color: var(--text);
+}
+.subMenu {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 16px;
+  margin-top: 2px;
+}
+.arrowDown::after {
+  content: "▼";
+  font-size: 12px;
+  margin-left: 8px;
+}
+.arrowRight::after {
+  content: "▶";
+  font-size: 12px;
+  margin-left: 8px;
+}
 .main {
   flex: 1;
   padding: 40px 32px;
