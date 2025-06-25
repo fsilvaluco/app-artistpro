@@ -72,6 +72,21 @@ export default function Sidebar({ children, theme, setTheme }) {
           <Link href="/permisos" className={styles.link}>
             Permisos
           </Link>
+          <Link href="/salud-mental" className={styles.link}>
+            Salud Mental
+          </Link>
+          <Link href="/radar" className={styles.link}>
+            Radar
+          </Link>
+          <Link href="/epk" className={styles.link}>
+            Kit de Prensa (EPK)
+          </Link>
+          <Link href="/comunicados" className={styles.link}>
+            Comunicados
+          </Link>
+          <Link href="/blog" className={styles.link}>
+            Blog
+          </Link>
         </nav>
         <div className={styles.themeSection}>
           <label htmlFor="theme-select" className={styles.themeLabel}>
