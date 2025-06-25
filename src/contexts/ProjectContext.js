@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../app/firebase";
 import { useSession } from "./SessionContext";
+import { useArtist } from "./ArtistContext";
 
 // Crear el contexto
 const ProjectContext = createContext(null);
@@ -37,15 +38,20 @@ export function ProjectProvider({ children }) {
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const { user } = useSession();
+  const { getCurrentArtistId, selectedArtist } = useArtist();
 
-  // Cargar proyectos del usuario
+  // Cargar proyectos del usuario y artista seleccionado
   const loadProjects = async () => {
     if (!user) return;
+    
+    const artistId = getCurrentArtistId();
+    if (!artistId) return;
     
     try {
       const q = query(
         collection(db, "projects"), 
         where("userId", "==", user.uid),
+        where("artistId", "==", artistId),
         orderBy("createdAt", "desc")
       );
       const querySnapshot = await getDocs(q);
@@ -59,14 +65,18 @@ export function ProjectProvider({ children }) {
     }
   };
 
-  // Cargar tareas del usuario
+  // Cargar tareas del usuario y artista seleccionado
   const loadTasks = async () => {
     if (!user) return;
+    
+    const artistId = getCurrentArtistId();
+    if (!artistId) return;
     
     try {
       const q = query(
         collection(db, "tasks"), 
         where("userId", "==", user.uid),
+        where("artistId", "==", artistId),
         orderBy("createdAt", "desc")
       );
       const querySnapshot = await getDocs(q);
@@ -80,9 +90,9 @@ export function ProjectProvider({ children }) {
     }
   };
 
-  // Cargar datos cuando el usuario cambie
+  // Cargar datos cuando el usuario o artista cambie
   useEffect(() => {
-    if (user) {
+    if (user && selectedArtist) {
       setLoading(true);
       Promise.all([loadProjects(), loadTasks()]).finally(() => {
         setLoading(false);
@@ -92,16 +102,37 @@ export function ProjectProvider({ children }) {
       setTasks([]);
       setLoading(false);
     }
-  }, [user]);
+  }, [user, selectedArtist]);
+
+  // Escuchar cambios de artista
+  useEffect(() => {
+    const handleArtistChange = () => {
+      if (user && selectedArtist) {
+        setLoading(true);
+        Promise.all([loadProjects(), loadTasks()]).finally(() => {
+          setLoading(false);
+        });
+      }
+    };
+
+    window.addEventListener('artistChanged', handleArtistChange);
+    return () => {
+      window.removeEventListener('artistChanged', handleArtistChange);
+    };
+  }, [user, selectedArtist]);
 
   // CRUD para Proyectos
   const createProject = async (projectData) => {
     if (!user) throw new Error("Usuario no autenticado");
     
+    const artistId = getCurrentArtistId();
+    if (!artistId) throw new Error("No hay artista seleccionado");
+    
     try {
       const docRef = await addDoc(collection(db, "projects"), {
         ...projectData,
         userId: user.uid,
+        artistId: artistId,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()
       });
@@ -163,10 +194,14 @@ export function ProjectProvider({ children }) {
   const createTask = async (taskData) => {
     if (!user) throw new Error("Usuario no autenticado");
     
+    const artistId = getCurrentArtistId();
+    if (!artistId) throw new Error("No hay artista seleccionado");
+    
     try {
       const docRef = await addDoc(collection(db, "tasks"), {
         ...taskData,
         userId: user.uid,
+        artistId: artistId,
         status: taskData.status || "todo",
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp()

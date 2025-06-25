@@ -1,42 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../app/firebase";
+import { useState } from "react";
+import { useArtist } from "../contexts/ArtistContext";
 import styles from "./ArtistSelector.module.css";
 
 export default function ArtistSelector() {
-  const [artists, setArtists] = useState([]);
-  const [selectedArtist, setSelectedArtist] = useState(null);
+  const { 
+    artists, 
+    selectedArtist, 
+    loading, 
+    selectArtist 
+  } = useArtist();
+
   const [isOpen, setIsOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchArtists = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "artists"));
-        const artistsData = [];
-        querySnapshot.forEach((doc) => {
-          artistsData.push({ id: doc.id, ...doc.data() });
-        });
-        setArtists(artistsData);
-        
-        // Seleccionar el primer artista por defecto si hay artistas disponibles
-        if (artistsData.length > 0) {
-          setSelectedArtist(artistsData[0]);
-        }
-      } catch (error) {
-        console.error("Error fetching artists:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchArtists();
-  }, []);
 
   const handleArtistSelect = (artist) => {
-    setSelectedArtist(artist);
+    selectArtist(artist);
     setIsOpen(false);
   };
 

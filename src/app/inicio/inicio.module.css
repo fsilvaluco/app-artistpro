@@ -146,6 +146,231 @@
   font-style: italic;
 }
 
+/* Loading spinner */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  gap: 16px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border);
+  border-top: 4px solid var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Artist info */
+.artistInfo {
+  margin: 20px 0;
+  padding: 20px;
+  background: var(--card);
+  border-radius: 12px;
+  border: 2px solid var(--primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.artistHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.artistPhoto {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--primary);
+  flex-shrink: 0;
+}
+
+.artistDetails h2 {
+  margin: 0 0 8px 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.artistGenre {
+  margin: 4px 0;
+  color: var(--muted-foreground);
+  font-weight: 500;
+}
+
+.artistDescription {
+  margin: 8px 0 0 0;
+  color: var(--muted-foreground);
+  font-style: italic;
+  line-height: 1.5;
+}
+
+/* Card improvements */
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cardIcon {
+  font-size: 1.5rem;
+  opacity: 0.7;
+}
+
+.cardFooter {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.artistTag {
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+.miniStat {
+  font-size: 0.9rem;
+  color: var(--muted-foreground);
+  margin-top: 8px;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.statsGrid .miniStat {
+  text-align: center;
+  margin: 0;
+}
+
+.statsGrid .miniStat strong {
+  display: block;
+  font-size: 1.2rem;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+/* Recent Activity */
+.recentActivity {
+  margin-top: 32px;
+}
+
+.recentActivity h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+
+.activityGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.activityCard {
+  padding: 16px;
+  background: var(--card);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+}
+
+.activityCard:hover {
+  border-color: var(--primary);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.activityHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.activityType {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.activityDate {
+  font-size: 0.8rem;
+  color: var(--muted-foreground);
+}
+
+.activityCard h4 {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.taskStatus {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.statusBadge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: white;
+}
+
+.statusBadge.todo {
+  background: #6b7280;
+}
+
+.statusBadge.in_progress {
+  background: #f59e0b;
+}
+
+.statusBadge.completed {
+  background: #10b981;
+}
+
+/* Empty state */
+.emptyState {
+  text-align: center;
+  padding: 60px 40px;
+  background: var(--muted);
+  border-radius: 12px;
+  margin-top: 32px;
+}
+
+.emptyState h3 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.emptyState p {
+  color: var(--muted-foreground);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
 [data-theme="dark"] .userInfo {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }

@@ -4,6 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ArtistSelector from "../components/ArtistSelector";
 import { SessionProvider } from "../contexts/SessionContext";
+import { ArtistProvider } from "../contexts/ArtistContext";
 import { ProjectProvider } from "../contexts/ProjectContext";
 import { UserProvider } from "../contexts/UserContext";
 
@@ -22,12 +23,14 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <SessionProvider>
-          <UserProvider>
-            <ProjectProvider>
-              <ArtistSelector />
-              {children}
-            </ProjectProvider>
-          </UserProvider>
+          <ArtistProvider>
+            <UserProvider>
+              <ProjectProvider>
+                <ArtistSelector />
+                {children}
+              </ProjectProvider>
+            </UserProvider>
+          </ArtistProvider>
         </SessionProvider>
       </body>
     </html>
