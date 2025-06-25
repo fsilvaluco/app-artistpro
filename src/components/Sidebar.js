@@ -2,6 +2,7 @@ import Image from "next/image";
 import styles from "./Sidebar.module.css";
 import Link from "next/link";
 import { useState } from "react";
+import ProjectSelector from "./ProjectSelector";
 
 export default function Sidebar({ children, theme, setTheme }) {
   const [open, setOpen] = useState({ analisis: true });
@@ -11,8 +12,45 @@ export default function Sidebar({ children, theme, setTheme }) {
         <div className={styles.logoSection}>
           <Image src="/next.svg" alt="ArtistPro logo" width={36} height={36} />
           <span className={styles.logoText}>ArtistPro</span>
+          {/* Selector de artista/proyecto tipo avatar Google */}
+          <div style={{ marginLeft: "auto" }}>
+            <ProjectSelector user={null} projects={[]} onSelect={() => {}} />
+          </div>
         </div>
         <nav className={styles.nav}>
+          <Link href="/inicio" className={styles.link}>
+            Inicio
+          </Link>
+          <Link href="/proyectos" className={styles.link}>
+            Proyectos
+          </Link>
+          <Link href="/kanban" className={styles.link}>
+            Kanban
+          </Link>
+          <Link href="/equipo" className={styles.link}>
+            Equipo
+          </Link>
+          <Link href="/notas" className={styles.link}>
+            Notas
+          </Link>
+          <Link href="/permisos" className={styles.link}>
+            Permisos
+          </Link>
+          <Link href="/salud-mental" className={styles.link}>
+            Salud Mental
+          </Link>
+          <Link href="/radar" className={styles.link}>
+            Radar
+          </Link>
+          <Link href="/epk" className={styles.link}>
+            Kit de Prensa (EPK)
+          </Link>
+          <Link href="/comunicados" className={styles.link}>
+            Comunicados
+          </Link>
+          <Link href="/blog" className={styles.link}>
+            Blog
+          </Link>
           <div className={styles.menuGroup}>
             <button
               className={styles.menuButton}
@@ -54,39 +92,6 @@ export default function Sidebar({ children, theme, setTheme }) {
               </div>
             )}
           </div>
-          <Link href="/inicio" className={styles.link}>
-            Inicio
-          </Link>
-          <Link href="/proyectos" className={styles.link}>
-            Proyectos
-          </Link>
-          <Link href="/kanban" className={styles.link}>
-            Kanban
-          </Link>
-          <Link href="/equipo" className={styles.link}>
-            Equipo
-          </Link>
-          <Link href="/notas" className={styles.link}>
-            Notas
-          </Link>
-          <Link href="/permisos" className={styles.link}>
-            Permisos
-          </Link>
-          <Link href="/salud-mental" className={styles.link}>
-            Salud Mental
-          </Link>
-          <Link href="/radar" className={styles.link}>
-            Radar
-          </Link>
-          <Link href="/epk" className={styles.link}>
-            Kit de Prensa (EPK)
-          </Link>
-          <Link href="/comunicados" className={styles.link}>
-            Comunicados
-          </Link>
-          <Link href="/blog" className={styles.link}>
-            Blog
-          </Link>
         </nav>
         <div className={styles.themeSection}>
           <label htmlFor="theme-select" className={styles.themeLabel}>

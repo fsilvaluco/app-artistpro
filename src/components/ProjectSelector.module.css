@@ -1,0 +1,73 @@
+.selector {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.avatarBtn {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 50%;
+  overflow: hidden;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: box-shadow 0.2s;
+}
+.avatarBtn:focus {
+  outline: 2px solid #888;
+}
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #eee;
+  color: #333;
+  font-weight: 700;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.avatarSmall {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #eee;
+  color: #333;
+  font-weight: 700;
+  font-size: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+.dropdown {
+  position: absolute;
+  top: 44px;
+  left: 0;
+  min-width: 180px;
+  background: var(--card);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px #0002;
+  z-index: 10;
+  padding: 8px 0;
+}
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 15px;
+  color: var(--text);
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.dropdownItem:hover {
+  background: #f0f0f0;
+}
