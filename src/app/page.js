@@ -6,11 +6,19 @@ import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "./firebase";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "../contexts/SessionContext";
 
 export default function Home() {
-  // Tema: claro, oscuro o sistema
   const [theme, setTheme] = useState("system");
   const router = useRouter();
+  const { user, loading } = useSession();
+
+  // Redirigir si ya está autenticado
+  useEffect(() => {
+    if (!loading && user) {
+      router.push("/inicio");
+    }
+  }, [user, loading, router]);
 
   useEffect(() => {
     if (theme === "system") {
@@ -31,11 +39,66 @@ export default function Home() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      router.push("/inicio"); // Redirige al resumen tras login
+      // La redirección se maneja automáticamente por el useEffect
     } catch (error) {
+      console.error("Error en el login:", error);
       alert(`Error en el login: ${error.message}`);
     }
   };
+
+  // Mostrar loading si aún está verificando la sesión
+  if (loading) {
+    return (
+      <div className={styles.page} style={{ 
+        minHeight: '100vh', 
+        display: 'flex', 
+        flexDirection: 'column', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        background: 'var(--bg, #ffffff)' 
+      }}>
+        <div style={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center', 
+          gap: 16,
+          padding: 32,
+          background: 'var(--card, #ffffff)',
+          borderRadius: 12,
+          boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1)',
+          border: '1px solid var(--border, #e1e5e9)'
+        }}>
+          <div style={{
+            width: 40,
+            height: 40,
+            border: '4px solid var(--border, #e1e5e9)',
+            borderTop: '4px solid var(--primary, #007bff)',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }}></div>
+          <p style={{ 
+            color: 'var(--text, #000000)', 
+            margin: 0, 
+            fontSize: 16, 
+            fontWeight: 500 
+          }}>
+            Cargando...
+          </p>
+        </div>
+        <style jsx>{`
+          @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
+
+  // No mostrar la página de login si el usuario ya está autenticado
+  if (user) {
+    return null;
+  }
   return (
     <div className={styles.page} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'var(--bg)' }}>
       <header style={{ marginBottom: 32, display: 'flex', alignItems: 'center', gap: 12 }}>

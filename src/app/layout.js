@@ -3,6 +3,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ArtistSelector from "../components/ArtistSelector";
+import { SessionProvider } from "../contexts/SessionContext";
+import { ProjectProvider } from "../contexts/ProjectContext";
+import { UserProvider } from "../contexts/UserContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,8 +21,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ArtistSelector />
-        {children}
+        <SessionProvider>
+          <UserProvider>
+            <ProjectProvider>
+              <ArtistSelector />
+              {children}
+            </ProjectProvider>
+          </UserProvider>
+        </SessionProvider>
       </body>
     </html>
   );
