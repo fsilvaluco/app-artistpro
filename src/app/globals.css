@@ -1,12 +1,24 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --bg: #fafafa;
+  --card: #fff;
+  --text: #111;
+  --text2: #444;
+  --button-bg: #fff;
+  --button-text: #111;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --bg: #181818;
+    --card: #232323;
+    --text: #fff;
+    --text2: #bbb;
+    --button-bg: #232323;
+    --button-text: #fff;
   }
 }
 

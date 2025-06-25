@@ -1,52 +1,86 @@
 "use client";
+
 import Image from "next/image";
 import styles from "./page.module.css";
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "./firebase";
+import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { auth } from "./firebase";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
+  // Tema: claro, oscuro o sistema
+  const [theme, setTheme] = useState("system");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (theme === "system") {
+      const mq = window.matchMedia("(prefers-color-scheme: dark)");
+      document.body.dataset.theme = mq.matches ? "dark" : "light";
+      const handler = (e) => {
+        document.body.dataset.theme = e.matches ? "dark" : "light";
+      };
+      mq.addEventListener("change", handler);
+      return () => mq.removeEventListener("change", handler);
+    } else {
+      document.body.dataset.theme = theme;
+    }
+  }, [theme]);
+
   // Función para login con Google
-  const loginWithGoogle = async () => {
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      alert("¡Login exitoso!");
-      // Aquí podrías redirigir o actualizar estado
+      router.push("/inicio"); // Redirige al resumen tras login
     } catch (error) {
-      alert("Error al iniciar sesión: " + error.message);
+      alert(`Error en el login: ${error.message}`);
     }
   };
-
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        {/* --- AGREGA TU BOTÓN AQUÍ --- */}
-        <button onClick={loginWithGoogle} style={{margin: '16px 0', padding: '12px 24px', fontSize: '16px', borderRadius: '6px', cursor: 'pointer'}}>
-          Iniciar sesión con Google
+    <div className={styles.page} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'var(--bg)' }}>
+      <header style={{ marginBottom: 32, display: 'flex', alignItems: 'center', gap: 12 }}>
+        <Image src="/next.svg" alt="ArtistPro logo" width={40} height={40} />
+        <span style={{ fontWeight: 700, fontSize: 28, letterSpacing: 1, color: 'var(--text)' }}>ArtistPro</span>
+        <select
+          aria-label="Tema"
+          value={theme}
+          onChange={e => setTheme(e.target.value)}
+          style={{ marginLeft: 16, borderRadius: 4, border: '1px solid #ccc', padding: '4px 8px', background: 'var(--bg)', color: 'var(--text)' }}
+        >
+          <option value="light">Claro</option>
+          <option value="dark">Oscuro</option>
+          <option value="system">Sistema</option>
+        </select>
+      </header>
+      <main style={{ width: 340, background: 'var(--card)', borderRadius: 8, boxShadow: '0 2px 16px #0001', padding: 32, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <h2 style={{ fontWeight: 700, fontSize: 22, marginBottom: 8, color: 'var(--text)' }}>La nueva era de la gestión musical</h2>
+        <p style={{ color: 'var(--text2)', fontSize: 16, marginBottom: 24, textAlign: 'center' }}>
+          Organiza, crea y evoluciona con <b>ArtistPro</b> by Katarsis.
+        </p>
+        <button
+          onClick={handleGoogleLogin}
+          style={{
+            width: '100%',
+            marginBottom: 12,
+            padding: '10px 0',
+            borderRadius: 4,
+            border: '1px solid #222',
+            background: 'var(--button-bg)',
+            color: 'var(--button-text)',
+            cursor: 'pointer',
+            fontWeight: 500,
+            fontSize: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: 8
+          }}
+        >
+          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google" width={20} height={20} style={{ marginRight: 8 }} />
+          Continuar con Google
         </button>
-        {/* --- FIN BOTÓN --- */}
-
-        <div className={styles.ctas}>
-          {/* ... tus links ... */}
-        </div>
+        {/* Aquí más adelante se agregarán otros botones de login */}
       </main>
-      <footer className={styles.footer}>
-        {/* ... tus links ... */}
-      </footer>
     </div>
   );
 }

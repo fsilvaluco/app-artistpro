@@ -1,0 +1,69 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg);
+}
+.sidebar {
+  width: 220px;
+  background: var(--card);
+  border-right: 1px solid #2222;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 24px 0 0 0;
+  gap: 32px;
+}
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px 12px 24px;
+  border-bottom: 1px solid #2221;
+}
+.logoText {
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 24px;
+}
+.link {
+  color: var(--text2);
+  text-decoration: none;
+  font-size: 16px;
+  padding: 8px 0;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+.link:hover, .link.active {
+  background: #2221;
+  color: var(--text);
+}
+.themeSection {
+  margin-top: auto;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.themeLabel {
+  color: var(--text2);
+  font-size: 13px;
+}
+.themeSelect {
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 4px 8px;
+  background: var(--bg);
+  color: var(--text);
+}
+.main {
+  flex: 1;
+  padding: 40px 32px;
+  background: var(--bg);
+}
