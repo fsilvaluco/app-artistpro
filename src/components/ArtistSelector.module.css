@@ -171,6 +171,58 @@
   font-size: 14px;
 }
 
+.noArtists p {
+  margin: 0 0 8px 0;
+}
+
+.noAccessButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 2px solid #f59e0b;
+  border-radius: 24px;
+  background: #fef3c7;
+  color: #92400e;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.noAccessButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  background: #fde68a;
+}
+
+.noAccessIcon {
+  font-size: 16px;
+}
+
+.noAccessText {
+  white-space: nowrap;
+}
+
+.solicitudButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+}
+
+.solicitudButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.4);
+}
+
 /* Tema oscuro */
 [data-theme="dark"] .artistButton {
   background: var(--card, #1f2937);

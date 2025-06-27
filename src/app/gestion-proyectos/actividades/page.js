@@ -7,7 +7,9 @@ import { useUsers } from '../../../contexts/UserContext';
 import CategoryBadge from '../../../components/CategoryBadge';
 import Sidebar from '../../../components/Sidebar';
 import ProtectedRoute from '../../../components/ProtectedRoute';
+import PermissionGuard from '../../../components/PermissionGuard';
 import { CATEGORIES_ARRAY } from '../../../utils/categories';
+import { PERMISSIONS } from '../../../utils/roles';
 import styles from './page.module.css';
 
 const TASK_STATUSES = {
@@ -224,16 +226,27 @@ export default function ActivitiesPage() {
 
   return (
     <ProtectedRoute>
-      <Sidebar theme={theme} setTheme={setTheme}>
+      <PermissionGuard 
+        permission={PERMISSIONS.PROJECTS_VIEW}
+        fallback={
+          <div style={{ padding: '20px', textAlign: 'center' }}>
+            <h1>Acceso Denegado</h1>
+            <p>No tienes permisos para ver las actividades.</p>
+          </div>
+        }
+      >
+        <Sidebar theme={theme} setTheme={setTheme}>
         <div className={styles.container}>
       <div className={styles.header}>
         <h1>Gestión de Actividades</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className={styles.addButton}
-        >
-          ➕ Nueva Actividad
-        </button>
+        <PermissionGuard permission={PERMISSIONS.PROJECTS_CREATE}>
+          <button
+            onClick={() => setShowModal(true)}
+            className={styles.addButton}
+          >
+            ➕ Nueva Actividad
+          </button>
+        </PermissionGuard>
       </div>
 
       {/* Filtros */}
@@ -608,6 +621,7 @@ export default function ActivitiesPage() {
       )}
         </div>
       </Sidebar>
+      </PermissionGuard>
     </ProtectedRoute>
   );
 }

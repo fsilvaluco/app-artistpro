@@ -3,10 +3,15 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import ArtistSelector from "../components/ArtistSelector";
+import RouteProtection from "../components/RouteProtection";
 import { SessionProvider } from "../contexts/SessionContext";
+import { AccessProvider } from "../contexts/AccessContext";
 import { ArtistProvider } from "../contexts/ArtistContext";
+import { PermissionsProvider } from "../contexts/PermissionsContext";
 import { ProjectProvider } from "../contexts/ProjectContext";
 import { UserProvider } from "../contexts/UserContext";
+import { NotificationProvider } from "../contexts/NotificationContext";
+import NotificationContainer from "../components/NotificationContainer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,14 +28,23 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <SessionProvider>
-          <ArtistProvider>
-            <UserProvider>
-              <ProjectProvider>
-                <ArtistSelector />
-                {children}
-              </ProjectProvider>
-            </UserProvider>
-          </ArtistProvider>
+          <AccessProvider>
+            <ArtistProvider>
+              <PermissionsProvider>
+                <UserProvider>
+                  <ProjectProvider>
+                    <NotificationProvider>
+                      <RouteProtection>
+                        <ArtistSelector />
+                        {children}
+                        <NotificationContainer />
+                      </RouteProtection>
+                    </NotificationProvider>
+                  </ProjectProvider>
+                </UserProvider>
+              </PermissionsProvider>
+            </ArtistProvider>
+          </AccessProvider>
         </SessionProvider>
       </body>
     </html>

@@ -1,0 +1,361 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+  text-align: center;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.successIcon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.checkmark {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: checkmark-pop 0.6s ease-in-out;
+}
+
+@keyframes checkmark-pop {
+  0% {
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.checkmarkStem,
+.checkmarkKick {
+  position: absolute;
+  background: white;
+  border-radius: 2px;
+}
+
+.checkmarkStem {
+  width: 3px;
+  height: 20px;
+  top: 22px;
+  left: 40px;
+  transform: rotate(45deg);
+  animation: checkmark-stem 0.3s ease-in-out 0.3s both;
+}
+
+.checkmarkKick {
+  width: 3px;
+  height: 12px;
+  top: 34px;
+  left: 32px;
+  transform: rotate(-45deg);
+  animation: checkmark-kick 0.3s ease-in-out 0.4s both;
+}
+
+@keyframes checkmark-stem {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 20px;
+  }
+}
+
+@keyframes checkmark-kick {
+  0% {
+    height: 0;
+  }
+  100% {
+    height: 12px;
+  }
+}
+
+.content h2 {
+  color: #2c3e50;
+  margin: 0 0 15px 0;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.mainMessage {
+  color: #5a6c7d;
+  margin: 0 0 30px 0;
+  font-size: 18px;
+  line-height: 1.5;
+}
+
+.mainMessage strong {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.requestInfo {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 30px;
+  text-align: left;
+}
+
+.requestInfo h3 {
+  color: #2c3e50;
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.infoGrid {
+  display: grid;
+  gap: 15px;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.infoItem:last-child {
+  border-bottom: none;
+}
+
+.infoLabel {
+  color: #5a6c7d;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.infoValue {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: right;
+}
+
+.nextSteps {
+  background: white;
+  border: 1px solid #e0e6ed;
+  border-radius: 12px;
+  padding: 25px;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.nextSteps h3 {
+  color: #2c3e50;
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.stepsList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.stepNumber {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.stepContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.stepTitle {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.stepDescription {
+  color: #5a6c7d;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.stepDescription strong {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.contactInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  background: #f0f9ff;
+  border: 1px solid #bae6fd;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.contactIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.contactText {
+  flex: 1;
+}
+
+.contactText p {
+  margin: 0 0 8px 0;
+  color: #0369a1;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.contactText p:last-child {
+  margin-bottom: 0;
+}
+
+.contactText strong {
+  font-weight: 600;
+}
+
+.reminder {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.reminderIcon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.reminderText {
+  color: #856404;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.reminderText strong {
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+  border-top: 1px solid #e0e6ed;
+}
+
+.closeButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.closeButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+@media (max-width: 768px) {
+  .content h2 {
+    font-size: 24px;
+  }
+  
+  .mainMessage {
+    font-size: 16px;
+  }
+  
+  .requestInfo,
+  .nextSteps {
+    padding: 20px;
+  }
+  
+  .step {
+    gap: 12px;
+  }
+  
+  .stepNumber {
+    width: 25px;
+    height: 25px;
+    font-size: 12px;
+  }
+  
+  .stepTitle {
+    font-size: 14px;
+  }
+  
+  .stepDescription {
+    font-size: 13px;
+  }
+  
+  .contactInfo {
+    gap: 12px;
+    padding: 15px;
+  }
+  
+  .contactIcon {
+    font-size: 20px;
+  }
+  
+  .reminder {
+    gap: 10px;
+    padding: 12px;
+  }
+  
+  .reminderIcon {
+    font-size: 18px;
+  }
+  
+  .closeButton {
+    padding: 12px 30px;
+    font-size: 16px;
+  }
+}

@@ -1,21 +1,18 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { 
-  collection, 
-  addDoc, 
-  getDocs, 
-  doc, 
-  updateDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  orderBy,
-  serverTimestamp 
-} from "firebase/firestore";
-import { db } from "../app/firebase";
 import { useSession } from "./SessionContext";
 import { useArtist } from "./ArtistContext";
+import {
+  createNestedProject,
+  getNestedProjects,
+  updateNestedProject,
+  deleteNestedProject,
+  createNestedTask,
+  getNestedTasks,
+  updateNestedTask,
+  deleteNestedTask
+} from "../utils/nestedStructure";
 
 // Crear el contexto
 const ProjectContext = createContext(null);
@@ -40,64 +37,72 @@ export function ProjectProvider({ children }) {
   const { user } = useSession();
   const { getCurrentArtistId, selectedArtist } = useArtist();
 
-  // Cargar proyectos del usuario y artista seleccionado
+  // Cargar proyectos del artista seleccionado (estructura anidada)
   const loadProjects = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log("❌ Sin usuario autenticado");
+      setProjects([]);
+      return;
+    }
     
     const artistId = getCurrentArtistId();
-    if (!artistId) return;
+    console.log("📂 Cargando proyectos para artista:", artistId);
+    if (!artistId) {
+      console.log("❌ No hay artistId, cancelando carga de proyectos");
+      setProjects([]);
+      return;
+    }
     
     try {
-      const q = query(
-        collection(db, "projects"), 
-        where("userId", "==", user.uid),
-        where("artistId", "==", artistId),
-        orderBy("createdAt", "desc")
-      );
-      const querySnapshot = await getDocs(q);
-      const projectsData = [];
-      querySnapshot.forEach((doc) => {
-        projectsData.push({ id: doc.id, ...doc.data() });
-      });
+      const projectsData = await getNestedProjects(artistId, user.uid);
+      console.log("📂 Proyectos cargados:", projectsData.length, "para artista:", artistId);
       setProjects(projectsData);
     } catch (error) {
-      console.error("Error loading projects:", error);
+      console.error("Error loading nested projects:", error);
+      setProjects([]);
     }
   };
 
-  // Cargar tareas del usuario y artista seleccionado
+  // Cargar tareas del artista seleccionado (estructura anidada)
   const loadTasks = async () => {
-    if (!user) return;
+    if (!user) {
+      console.log("❌ Sin usuario autenticado");
+      setTasks([]);
+      return;
+    }
     
     const artistId = getCurrentArtistId();
-    if (!artistId) return;
+    console.log("📋 Cargando tareas para artista:", artistId);
+    if (!artistId) {
+      console.log("❌ No hay artistId, cancelando carga de tareas");
+      setTasks([]);
+      return;
+    }
     
     try {
-      const q = query(
-        collection(db, "tasks"), 
-        where("userId", "==", user.uid),
-        where("artistId", "==", artistId),
-        orderBy("createdAt", "desc")
-      );
-      const querySnapshot = await getDocs(q);
-      const tasksData = [];
-      querySnapshot.forEach((doc) => {
-        tasksData.push({ id: doc.id, ...doc.data() });
-      });
+      const tasksData = await getNestedTasks(artistId, user.uid);
+      console.log("📋 Tareas cargadas:", tasksData.length, "para artista:", artistId);
       setTasks(tasksData);
     } catch (error) {
-      console.error("Error loading tasks:", error);
+      console.error("Error loading nested tasks:", error);
+      setTasks([]);
     }
   };
 
   // Cargar datos cuando el usuario o artista cambie
   useEffect(() => {
     if (user && selectedArtist) {
+      console.log("🔄 Recargando datos por cambio de usuario/artista");
       setLoading(true);
+      // Limpiar datos anteriores inmediatamente
+      setProjects([]);
+      setTasks([]);
+      
       Promise.all([loadProjects(), loadTasks()]).finally(() => {
         setLoading(false);
       });
     } else {
+      console.log("❌ Sin usuario o artista, limpiando datos");
       setProjects([]);
       setTasks([]);
       setLoading(false);
@@ -107,21 +112,37 @@ export function ProjectProvider({ children }) {
   // Escuchar cambios de artista
   useEffect(() => {
     const handleArtistChange = () => {
+      console.log("🎨 Evento de cambio de artista detectado");
       if (user && selectedArtist) {
+        console.log("🔄 Recargando datos por cambio de artista");
         setLoading(true);
+        // Limpiar datos anteriores inmediatamente
+        setProjects([]);
+        setTasks([]);
+        
         Promise.all([loadProjects(), loadTasks()]).finally(() => {
           setLoading(false);
         });
       }
     };
 
+    const handleUserLogout = () => {
+      console.log("🚪 Evento de logout detectado, limpiando datos");
+      setProjects([]);
+      setTasks([]);
+      setLoading(false);
+    };
+
     window.addEventListener('artistChanged', handleArtistChange);
+    window.addEventListener('userLogout', handleUserLogout);
+    
     return () => {
       window.removeEventListener('artistChanged', handleArtistChange);
+      window.removeEventListener('userLogout', handleUserLogout);
     };
   }, [user, selectedArtist]);
 
-  // CRUD para Proyectos
+  // CRUD para Proyectos (estructura anidada)
   const createProject = async (projectData) => {
     if (!user) throw new Error("Usuario no autenticado");
     
@@ -129,23 +150,10 @@ export function ProjectProvider({ children }) {
     if (!artistId) throw new Error("No hay artista seleccionado");
     
     try {
-      const docRef = await addDoc(collection(db, "projects"), {
-        ...projectData,
-        userId: user.uid,
-        artistId: artistId,
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
-      
-      const newProject = {
-        id: docRef.id,
-        ...projectData,
-        userId: user.uid,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      
+      console.log("🆕 Creando proyecto para artista:", artistId);
+      const newProject = await createNestedProject(artistId, user.uid, projectData);
       setProjects(prev => [newProject, ...prev]);
+      console.log("✅ Proyecto creado:", newProject.title);
       return newProject;
     } catch (error) {
       console.error("Error creating project:", error);
@@ -154,13 +162,11 @@ export function ProjectProvider({ children }) {
   };
 
   const updateProject = async (projectId, updates) => {
+    const artistId = getCurrentArtistId();
+    if (!artistId) throw new Error("No hay artista seleccionado");
+    
     try {
-      const projectRef = doc(db, "projects", projectId);
-      await updateDoc(projectRef, {
-        ...updates,
-        updatedAt: serverTimestamp()
-      });
-      
+      await updateNestedProject(artistId, projectId, updates);
       setProjects(prev => 
         prev.map(project => 
           project.id === projectId 
@@ -168,6 +174,7 @@ export function ProjectProvider({ children }) {
             : project
         )
       );
+      console.log("✅ Proyecto actualizado:", projectId);
     } catch (error) {
       console.error("Error updating project:", error);
       throw error;
@@ -175,22 +182,23 @@ export function ProjectProvider({ children }) {
   };
 
   const deleteProject = async (projectId) => {
+    const artistId = getCurrentArtistId();
+    if (!artistId) throw new Error("No hay artista seleccionado");
+    
     try {
-      await deleteDoc(doc(db, "projects", projectId));
+      await deleteNestedProject(artistId, projectId);
       setProjects(prev => prev.filter(project => project.id !== projectId));
       
-      // También eliminar tareas asociadas al proyecto
-      const projectTasks = tasks.filter(task => task.projectId === projectId);
-      for (const task of projectTasks) {
-        await deleteTask(task.id);
-      }
+      // También eliminar tareas asociadas del estado local
+      setTasks(prev => prev.filter(task => task.projectId !== projectId));
+      console.log("✅ Proyecto eliminado:", projectId);
     } catch (error) {
       console.error("Error deleting project:", error);
       throw error;
     }
   };
 
-  // CRUD para Tareas
+  // CRUD para Tareas (estructura anidada)
   const createTask = async (taskData) => {
     if (!user) throw new Error("Usuario no autenticado");
     
@@ -198,25 +206,10 @@ export function ProjectProvider({ children }) {
     if (!artistId) throw new Error("No hay artista seleccionado");
     
     try {
-      const docRef = await addDoc(collection(db, "tasks"), {
-        ...taskData,
-        userId: user.uid,
-        artistId: artistId,
-        status: taskData.status || "todo",
-        createdAt: serverTimestamp(),
-        updatedAt: serverTimestamp()
-      });
-      
-      const newTask = {
-        id: docRef.id,
-        ...taskData,
-        userId: user.uid,
-        status: taskData.status || "todo",
-        createdAt: new Date(),
-        updatedAt: new Date()
-      };
-      
+      console.log("🆕 Creando tarea para artista:", artistId);
+      const newTask = await createNestedTask(artistId, user.uid, taskData);
       setTasks(prev => [newTask, ...prev]);
+      console.log("✅ Tarea creada:", newTask.title);
       return newTask;
     } catch (error) {
       console.error("Error creating task:", error);
@@ -225,13 +218,11 @@ export function ProjectProvider({ children }) {
   };
 
   const updateTask = async (taskId, updates) => {
+    const artistId = getCurrentArtistId();
+    if (!artistId) throw new Error("No hay artista seleccionado");
+    
     try {
-      const taskRef = doc(db, "tasks", taskId);
-      await updateDoc(taskRef, {
-        ...updates,
-        updatedAt: serverTimestamp()
-      });
-      
+      await updateNestedTask(artistId, taskId, updates);
       setTasks(prev => 
         prev.map(task => 
           task.id === taskId 
@@ -239,6 +230,7 @@ export function ProjectProvider({ children }) {
             : task
         )
       );
+      console.log("✅ Tarea actualizada:", taskId);
     } catch (error) {
       console.error("Error updating task:", error);
       throw error;
@@ -246,9 +238,13 @@ export function ProjectProvider({ children }) {
   };
 
   const deleteTask = async (taskId) => {
+    const artistId = getCurrentArtistId();
+    if (!artistId) throw new Error("No hay artista seleccionado");
+    
     try {
-      await deleteDoc(doc(db, "tasks", taskId));
+      await deleteNestedTask(artistId, taskId);
       setTasks(prev => prev.filter(task => task.id !== taskId));
+      console.log("✅ Tarea eliminada:", taskId);
     } catch (error) {
       console.error("Error deleting task:", error);
       throw error;

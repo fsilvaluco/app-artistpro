@@ -40,8 +40,20 @@ export function SessionProvider({ children }) {
   // Función para cerrar sesión
   const logout = async () => {
     try {
+      console.log("🚪 Cerrando sesión...");
+      
+      // Limpiar localStorage
+      localStorage.removeItem('selectedArtistId');
+      console.log("🧹 LocalStorage limpiado");
+      
+      // Emitir evento de logout para limpiar contextos
+      window.dispatchEvent(new CustomEvent('userLogout'));
+      console.log("📡 Evento userLogout emitido");
+      
       await signOut(auth);
       router.push("/"); // Redirigir al login
+      
+      console.log("✅ Sesión cerrada exitosamente");
     } catch (error) {
       console.error("Error al cerrar sesión:", error);
       alert("Error al cerrar sesión");

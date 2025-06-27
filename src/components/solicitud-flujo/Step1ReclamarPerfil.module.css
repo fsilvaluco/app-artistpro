@@ -1,0 +1,312 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.content {
+  flex: 1;
+}
+
+.content h2 {
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.description {
+  color: #5a6c7d;
+  margin: 0 0 30px 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.searchSection {
+  margin-bottom: 20px;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.labelText {
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.searchInput {
+  padding: 12px 15px;
+  border: 2px solid #e0e6ed;
+  border-radius: 8px;
+  font-size: 16px;
+  background: white;
+  color: #2c3e50;
+  transition: border-color 0.3s ease;
+}
+
+.searchInput:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.searchResults {
+  margin-top: 10px;
+  border: 1px solid #e0e6ed;
+  border-radius: 8px;
+  max-height: 200px;
+  overflow-y: auto;
+  background: white;
+}
+
+.artistResult {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.artistResult:last-child {
+  border-bottom: none;
+}
+
+.artistResult:hover {
+  background: #f8f9fa;
+}
+
+.artistResult.selected {
+  background: #e3f2fd;
+  border-color: #667eea;
+}
+
+.artistInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.artistAvatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.artistDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.artistName {
+  color: #2c3e50;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.artistGenre {
+  color: #5a6c7d;
+  font-size: 12px;
+}
+
+.checkmark {
+  color: #00b894;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  color: #5a6c7d;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #e0e6ed;
+}
+
+.divider span {
+  padding: 0 15px;
+}
+
+.uriSection {
+  margin-bottom: 30px;
+}
+
+.uriInputGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.uriInput {
+  flex: 1;
+  padding: 12px 15px;
+  border: 2px solid #e0e6ed;
+  border-radius: 8px;
+  font-size: 14px;
+  background: white;
+  color: #2c3e50;
+  transition: border-color 0.3s ease;
+  font-family: monospace;
+}
+
+.uriInput:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.processUriButton {
+  background: #00b894;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.processUriButton:hover:not(:disabled) {
+  background: #00a085;
+  transform: translateY(-1px);
+}
+
+.processUriButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.selectedArtist {
+  margin-bottom: 20px;
+}
+
+.selectedArtist h3 {
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.selectedArtistCard {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  border: 2px solid #00b894;
+  border-radius: 12px;
+  background: #f0fdf4;
+}
+
+.selectedAvatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.selectedDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.selectedName {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.selectedGenre {
+  color: #5a6c7d;
+  font-size: 14px;
+}
+
+.warning {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 15px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.warningIcon {
+  font-size: 18px;
+}
+
+.warningText {
+  color: #856404;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+  border-top: 1px solid #e0e6ed;
+}
+
+.nextButton {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.nextButton:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.nextButton.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .content h2 {
+    font-size: 20px;
+  }
+  
+  .description {
+    font-size: 14px;
+  }
+  
+  .uriInputGroup {
+    flex-direction: column;
+  }
+  
+  .selectedArtistCard {
+    gap: 12px;
+    padding: 12px;
+  }
+  
+  .selectedAvatar {
+    width: 40px;
+    height: 40px;
+  }
+}

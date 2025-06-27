@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { useArtist } from "../contexts/ArtistContext";
+import { useAccess } from "../contexts/AccessContext";
+import { useSession } from "../contexts/SessionContext";
+import { useRouter, usePathname } from "next/navigation";
 import styles from "./ArtistSelector.module.css";
 
 export default function ArtistSelector() {
@@ -9,13 +12,41 @@ export default function ArtistSelector() {
     artists, 
     selectedArtist, 
     loading, 
-    selectArtist 
+    selectArtist,
+    hasAccess
   } = useArtist();
+
+  const { isAuthenticated } = useSession();
+  const { hasAccess: userHasAccess } = useAccess();
+  const router = useRouter();
+  const pathname = usePathname();
 
   const [isOpen, setIsOpen] = useState(false);
 
+  // No mostrar el selector en ciertas rutas
+  const hiddenRoutes = ['/solicitar-acceso', '/'];
+  if (hiddenRoutes.includes(pathname)) {
+    return null;
+  }
+
+  // No mostrar si no está autenticado
+  if (!isAuthenticated()) {
+    return null;
+  }
+
   const handleArtistSelect = (artist) => {
+    console.log("🎯 ArtistSelector: Seleccionando artista:", artist?.name, "ID:", artist?.id);
     selectArtist(artist);
+    setIsOpen(false);
+    
+    // Forzar un pequeño retraso para asegurar que el evento se procese
+    setTimeout(() => {
+      console.log("✅ ArtistSelector: Cambio de artista completado");
+    }, 100);
+  };
+
+  const handleSolicitudAcceso = () => {
+    router.push('/solicitar-acceso');
     setIsOpen(false);
   };
 
@@ -25,6 +56,22 @@ export default function ArtistSelector() {
         <div className={styles.avatarPlaceholder}>
           <div className={styles.loadingSpinner}></div>
         </div>
+      </div>
+    );
+  }
+
+  // Si no tiene acceso, mostrar botón para solicitar acceso
+  if (!userHasAccess) {
+    return (
+      <div className={styles.artistSelector}>
+        <button
+          className={styles.noAccessButton}
+          onClick={handleSolicitudAcceso}
+          title="Solicitar acceso a artistas"
+        >
+          <span className={styles.noAccessIcon}>🔒</span>
+          <span className={styles.noAccessText}>Sin acceso</span>
+        </button>
       </div>
     );
   }
@@ -56,10 +103,18 @@ export default function ArtistSelector() {
       {isOpen && (
         <div className={styles.dropdown}>
           <div className={styles.dropdownHeader}>
-            <span className={styles.dropdownTitle}>Seleccionar Artista</span>
+            <span className={styles.dropdownTitle}>Artistas Accesibles</span>
           </div>
           {artists.length === 0 ? (
-            <div className={styles.noArtists}>No hay artistas disponibles</div>
+            <div className={styles.noArtists}>
+              <p>No tienes acceso a ningún artista</p>
+              <button 
+                onClick={handleSolicitudAcceso}
+                className={styles.solicitudButton}
+              >
+                Solicitar Acceso
+              </button>
+            </div>
           ) : (
             artists.map((artist) => (
               <button

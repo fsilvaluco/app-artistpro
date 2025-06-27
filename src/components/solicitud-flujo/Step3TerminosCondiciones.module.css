@@ -1,0 +1,284 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  justify-content: space-between;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.content h2 {
+  color: #2c3e50;
+  margin: 0 0 10px 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.description {
+  color: #5a6c7d;
+  margin: 0 0 25px 0;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.summaryCard {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 25px;
+}
+
+.summaryCard h3 {
+  color: #2c3e50;
+  margin: 0 0 15px 0;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.summaryGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.summaryItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.summaryItem:last-child {
+  border-bottom: none;
+}
+
+.summaryLabel {
+  color: #5a6c7d;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.summaryValue {
+  color: #2c3e50;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: right;
+}
+
+.termsSection {
+  margin-bottom: 25px;
+}
+
+.termsContent {
+  background: white;
+  border: 1px solid #e0e6ed;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.termsContent h4 {
+  color: #2c3e50;
+  margin: 0 0 15px 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.termsText {
+  color: #5a6c7d;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.termsText p {
+  margin: 0 0 15px 0;
+}
+
+.termsText ul {
+  margin: 15px 0;
+  padding-left: 20px;
+}
+
+.termsText li {
+  margin-bottom: 10px;
+}
+
+.termsText strong {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.link {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.acceptanceSection {
+  background: #f0f9ff;
+  border: 2px solid #bae6fd;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.checkboxText {
+  color: #0369a1;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.checkboxText strong {
+  color: #1e40af;
+  font-weight: 600;
+}
+
+.finalInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  background: #ecfdf5;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 20px;
+}
+
+.infoIcon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.infoText {
+  flex: 1;
+}
+
+.infoText p {
+  margin: 0 0 8px 0;
+  color: #065f46;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.infoText p:last-child {
+  margin-bottom: 0;
+}
+
+.infoText strong {
+  font-weight: 600;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20px;
+  border-top: 1px solid #e0e6ed;
+  margin-top: 20px;
+}
+
+.prevButton {
+  background: none;
+  color: #667eea;
+  border: 1px solid #667eea;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.prevButton:hover:not(.disabled) {
+  background: #667eea;
+  color: white;
+}
+
+.submitButton {
+  background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.submitButton:hover:not(.disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 184, 148, 0.4);
+}
+
+.prevButton.disabled,
+.submitButton.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 768px) {
+  .content h2 {
+    font-size: 20px;
+  }
+  
+  .description {
+    font-size: 14px;
+  }
+  
+  .summaryCard {
+    padding: 15px;
+  }
+  
+  .termsContent {
+    padding: 15px;
+  }
+  
+  .termsText {
+    font-size: 13px;
+  }
+  
+  .acceptanceSection {
+    padding: 15px;
+  }
+  
+  .checkboxText {
+    font-size: 13px;
+  }
+  
+  .finalInfo {
+    gap: 12px;
+    padding: 15px;
+  }
+  
+  .infoIcon {
+    font-size: 20px;
+  }
+  
+  .actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

@@ -3,8 +3,10 @@
 import { useState } from "react";
 import Sidebar from "../../../components/Sidebar";
 import ProtectedRoute from "../../../components/ProtectedRoute";
+import PermissionGuard from "../../../components/PermissionGuard";
 import { useProject } from "../../../contexts/ProjectContext";
 import { useSession } from "../../../contexts/SessionContext";
+import { PERMISSIONS } from "../../../utils/roles";
 import { 
   CATEGORIES_ARRAY, 
   getCategoryColor, 
@@ -16,7 +18,17 @@ import {
 export default function ProyectosPageWrapper() {
   return (
     <ProtectedRoute>
-      <ProyectosPage />
+      <PermissionGuard 
+        permission={PERMISSIONS.PROJECTS_VIEW}
+        fallback={
+          <div style={{ padding: '20px', textAlign: 'center' }}>
+            <h1>Acceso Denegado</h1>
+            <p>No tienes permisos para ver los proyectos.</p>
+          </div>
+        }
+      >
+        <ProyectosPage />
+      </PermissionGuard>
     </ProtectedRoute>
   );
 }
