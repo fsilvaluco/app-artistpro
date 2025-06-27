@@ -18,12 +18,22 @@ export default function PermissionGuard({
     isAdmin, 
     isSuperAdmin, 
     loading,
-    roleLoaded
+    roleLoaded,
+    userAccessLevel
   } = usePermissions();
+
+  console.log(`🛡️ PermissionGuard - AccessLevel: ${userAccessLevel}, Loading: ${loading}, RoleLoaded: ${roleLoaded}, IsSuperAdmin: ${isSuperAdmin()}`);
 
   // Mostrar loading mientras se cargan los permisos
   if (loading || !roleLoaded) {
+    console.log("⏳ PermissionGuard: Cargando permisos...");
     return fallback || <div>Verificando permisos...</div>;
+  }
+
+  // Los super admins tienen acceso automático a todo
+  if (isSuperAdmin()) {
+    console.log("🦾 PermissionGuard: Super Admin detectado, acceso garantizado");
+    return children;
   }
 
   // Verificar super admin

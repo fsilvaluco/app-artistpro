@@ -5,6 +5,10 @@
 }
 .sidebar {
   width: 220px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
   background: var(--card);
   border-right: 1px solid #2222;
   display: flex;
@@ -12,6 +16,8 @@
   align-items: stretch;
   padding: 24px 0 0 0;
   gap: 32px;
+  overflow-y: auto;
+  z-index: 1000;
 }
 .logoSection {
   display: flex;
@@ -190,8 +196,10 @@
 }
 .main {
   flex: 1;
+  margin-left: 220px;
   padding: 40px 32px;
   background: var(--bg);
+  min-height: 100vh;
 }
 
 /* Tema oscuro */
@@ -210,4 +218,45 @@
 
 [data-theme="dark"] .userEmail {
   color: var(--text2, #9ca3af);
+}
+
+/* Responsive design para dispositivos móviles */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    position: relative;
+    height: auto;
+    overflow-y: visible;
+  }
+  
+  .main {
+    margin-left: 0;
+  }
+  
+  .layout {
+    flex-direction: column;
+  }
+}
+
+/* Smooth scrolling para el sidebar */
+.sidebar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text2, #6b7280) transparent;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: var(--text2, #6b7280);
+  border-radius: 2px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: var(--text, #000000);
 }

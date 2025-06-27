@@ -1,13 +1,26 @@
-// Definición de roles del sistema
+// Definición de roles/funciones en el equipo
 export const ROLES = {
-  SUPER_ADMIN: 'super_admin',        // Acceso total al sistema
-  ARTIST_ADMIN: 'artist_admin',      // Administrador del artista
   MANAGER: 'manager',                // Manager del artista
   AGENT: 'agent',                    // Agente de booking/shows
   MARKETING: 'marketing',            // Especialista en marketing
   PRESS: 'press',                    // Relaciones públicas/prensa
-  EDITOR: 'editor',                  // Editor de contenido
-  VIEWER: 'viewer'                   // Solo lectura
+  PRODUCER: 'producer',              // Productor musical
+  SOUND_ENGINEER: 'sound_engineer',  // Ingeniero de sonido
+  MUSICIAN: 'musician',              // Músico
+  PHOTOGRAPHER: 'photographer',      // Fotógrafo
+  VIDEOGRAPHER: 'videographer',      // Videoógrafo
+  DESIGNER: 'designer',              // Diseñador gráfico
+  SOCIAL_MEDIA: 'social_media',      // Community manager
+  BOOKING: 'booking',                // Booking agent
+  OTHER: 'other'                     // Otro rol
+};
+
+// Definición de niveles de acceso/permisos
+export const ACCESS_LEVELS = {
+  SUPER_ADMIN: 'super_admin',        // Acceso total al sistema
+  ADMINISTRADOR: 'administrador',    // Administrador del artista
+  EDITOR: 'editor',                  // Editor con permisos limitados
+  LECTOR: 'lector'                   // Solo lectura
 };
 
 // Permisos por módulo
@@ -52,15 +65,16 @@ export const PERMISSIONS = {
   NOTES_DELETE: 'notes.delete'
 };
 
-// Configuración de permisos por rol
-export const ROLE_PERMISSIONS = {
-  [ROLES.SUPER_ADMIN]: [
+// Configuración de permisos por nivel de acceso
+export const ACCESS_LEVEL_PERMISSIONS = {
+  [ACCESS_LEVELS.SUPER_ADMIN]: [
     // Acceso total a todo
     ...Object.values(PERMISSIONS)
   ],
   
-  [ROLES.ARTIST_ADMIN]: [
-    // Casi todo excepto super admin functions
+  [ACCESS_LEVELS.ADMINISTRADOR]: [
+    // Los administradores pueden agregar, actualizar y eliminar miembros del equipo, 
+    // información de la facturación e información del artista
     PERMISSIONS.TEAM_VIEW,
     PERMISSIONS.TEAM_EDIT,
     PERMISSIONS.TEAM_DELETE,
@@ -87,77 +101,14 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.NOTES_DELETE
   ],
   
-  [ROLES.MANAGER]: [
-    PERMISSIONS.TEAM_VIEW,
-    PERMISSIONS.TEAM_EDIT,
-    PERMISSIONS.TEAM_INVITE,
-    PERMISSIONS.PROJECTS_VIEW,
-    PERMISSIONS.PROJECTS_CREATE,
-    PERMISSIONS.PROJECTS_EDIT,
-    PERMISSIONS.ANALYTICS_VIEW,
-    PERMISSIONS.ANALYTICS_EXPORT,
-    PERMISSIONS.BLOG_VIEW,
-    PERMISSIONS.BLOG_CREATE,
-    PERMISSIONS.BLOG_EDIT,
-    PERMISSIONS.BLOG_PUBLISH,
-    PERMISSIONS.EPK_VIEW,
-    PERMISSIONS.EPK_EDIT,
-    PERMISSIONS.EPK_EXPORT,
-    PERMISSIONS.NOTES_VIEW,
-    PERMISSIONS.NOTES_CREATE,
-    PERMISSIONS.NOTES_EDIT
-  ],
-  
-  [ROLES.AGENT]: [
+  [ACCESS_LEVELS.EDITOR]: [
+    // Los editores pueden agregar, actualizar y eliminar información, 
+    // presentaciones para consideración editorial y campañas de los artistas
     PERMISSIONS.TEAM_VIEW,
     PERMISSIONS.PROJECTS_VIEW,
     PERMISSIONS.PROJECTS_CREATE,
     PERMISSIONS.PROJECTS_EDIT,
     PERMISSIONS.ANALYTICS_VIEW,
-    PERMISSIONS.EPK_VIEW,
-    PERMISSIONS.NOTES_VIEW,
-    PERMISSIONS.NOTES_CREATE,
-    PERMISSIONS.NOTES_EDIT
-  ],
-  
-  [ROLES.MARKETING]: [
-    PERMISSIONS.TEAM_VIEW,
-    PERMISSIONS.PROJECTS_VIEW,
-    PERMISSIONS.PROJECTS_CREATE,
-    PERMISSIONS.PROJECTS_EDIT,
-    PERMISSIONS.ANALYTICS_VIEW,
-    PERMISSIONS.ANALYTICS_EXPORT,
-    PERMISSIONS.BLOG_VIEW,
-    PERMISSIONS.BLOG_CREATE,
-    PERMISSIONS.BLOG_EDIT,
-    PERMISSIONS.BLOG_PUBLISH,
-    PERMISSIONS.EPK_VIEW,
-    PERMISSIONS.EPK_EDIT,
-    PERMISSIONS.NOTES_VIEW,
-    PERMISSIONS.NOTES_CREATE,
-    PERMISSIONS.NOTES_EDIT
-  ],
-  
-  [ROLES.PRESS]: [
-    PERMISSIONS.TEAM_VIEW,
-    PERMISSIONS.PROJECTS_VIEW,
-    PERMISSIONS.ANALYTICS_VIEW,
-    PERMISSIONS.BLOG_VIEW,
-    PERMISSIONS.BLOG_CREATE,
-    PERMISSIONS.BLOG_EDIT,
-    PERMISSIONS.EPK_VIEW,
-    PERMISSIONS.EPK_EDIT,
-    PERMISSIONS.EPK_EXPORT,
-    PERMISSIONS.NOTES_VIEW,
-    PERMISSIONS.NOTES_CREATE,
-    PERMISSIONS.NOTES_EDIT
-  ],
-  
-  [ROLES.EDITOR]: [
-    PERMISSIONS.TEAM_VIEW,
-    PERMISSIONS.PROJECTS_VIEW,
-    PERMISSIONS.PROJECTS_EDIT,
-    PERMISSIONS.ANALYTICS_VIEW,
     PERMISSIONS.BLOG_VIEW,
     PERMISSIONS.BLOG_CREATE,
     PERMISSIONS.BLOG_EDIT,
@@ -168,7 +119,8 @@ export const ROLE_PERMISSIONS = {
     PERMISSIONS.NOTES_EDIT
   ],
   
-  [ROLES.VIEWER]: [
+  [ACCESS_LEVELS.LECTOR]: [
+    // Solo lectura
     PERMISSIONS.TEAM_VIEW,
     PERMISSIONS.PROJECTS_VIEW,
     PERMISSIONS.ANALYTICS_VIEW,
@@ -178,91 +130,147 @@ export const ROLE_PERMISSIONS = {
   ]
 };
 
-// Labels legibles para los roles
+// Labels legibles para los roles/funciones
 export const ROLE_LABELS = {
-  [ROLES.SUPER_ADMIN]: 'Super Administrador',
-  [ROLES.ARTIST_ADMIN]: 'Administrador del Artista',
   [ROLES.MANAGER]: 'Manager',
   [ROLES.AGENT]: 'Agente',
   [ROLES.MARKETING]: 'Marketing',
   [ROLES.PRESS]: 'Prensa',
-  [ROLES.EDITOR]: 'Editor',
-  [ROLES.VIEWER]: 'Visualizador'
+  [ROLES.PRODUCER]: 'Productor',
+  [ROLES.SOUND_ENGINEER]: 'Ingeniero de Sonido',
+  [ROLES.MUSICIAN]: 'Músico',
+  [ROLES.PHOTOGRAPHER]: 'Fotógrafo',
+  [ROLES.VIDEOGRAPHER]: 'Videoógrafo',
+  [ROLES.DESIGNER]: 'Diseñador',
+  [ROLES.SOCIAL_MEDIA]: 'Community Manager',
+  [ROLES.BOOKING]: 'Booking Agent',
+  [ROLES.OTHER]: 'Otro'
 };
 
-// Descripciones de los roles
+// Labels legibles para los niveles de acceso
+export const ACCESS_LEVEL_LABELS = {
+  [ACCESS_LEVELS.SUPER_ADMIN]: 'Super Administrador',
+  [ACCESS_LEVELS.ADMINISTRADOR]: 'Administrador',
+  [ACCESS_LEVELS.EDITOR]: 'Editor',
+  [ACCESS_LEVELS.LECTOR]: 'Lector'
+};
+
+// Descripciones de los roles/funciones
 export const ROLE_DESCRIPTIONS = {
-  [ROLES.SUPER_ADMIN]: 'Acceso completo al sistema y todos los artistas',
-  [ROLES.ARTIST_ADMIN]: 'Control total sobre el artista y su equipo',
-  [ROLES.MANAGER]: 'Gestión de proyectos, equipo y estrategia general',
-  [ROLES.AGENT]: 'Enfocado en booking, shows y eventos',
-  [ROLES.MARKETING]: 'Campañas, promoción y análisis de marketing',
-  [ROLES.PRESS]: 'Relaciones públicas, comunicados y EPK',
-  [ROLES.EDITOR]: 'Creación y edición de contenido',
-  [ROLES.VIEWER]: 'Solo lectura, sin permisos de edición'
+  [ROLES.MANAGER]: 'Gestión general del artista y coordinación del equipo',
+  [ROLES.AGENT]: 'Representación y negociación de contratos',
+  [ROLES.MARKETING]: 'Estrategias de promoción y marketing digital',
+  [ROLES.PRESS]: 'Relaciones públicas y medios de comunicación',
+  [ROLES.PRODUCER]: 'Producción musical y dirección artística',
+  [ROLES.SOUND_ENGINEER]: 'Grabación, mezcla y masterización',
+  [ROLES.MUSICIAN]: 'Interpretación y composición musical',
+  [ROLES.PHOTOGRAPHER]: 'Fotografía artística y promocional',
+  [ROLES.VIDEOGRAPHER]: 'Producción audiovisual y videoclips',
+  [ROLES.DESIGNER]: 'Diseño gráfico y material promocional',
+  [ROLES.SOCIAL_MEDIA]: 'Gestión de redes sociales y comunidad',
+  [ROLES.BOOKING]: 'Gestión de shows y eventos en vivo',
+  [ROLES.OTHER]: 'Función especializada no listada'
 };
 
-// Colores para los roles (para UI)
+// Descripciones de los niveles de acceso
+export const ACCESS_LEVEL_DESCRIPTIONS = {
+  [ACCESS_LEVELS.SUPER_ADMIN]: 'Acceso completo al sistema y todos los artistas',
+  [ACCESS_LEVELS.ADMINISTRADOR]: 'Puede agregar, actualizar y eliminar miembros del equipo, información de facturación e información del artista',
+  [ACCESS_LEVELS.EDITOR]: 'Puede agregar, actualizar y eliminar información, presentaciones para consideración editorial y campañas de los artistas',
+  [ACCESS_LEVELS.LECTOR]: 'Solo puede ver la información, sin permisos de edición'
+};
+
+// Colores para los roles/funciones (para UI)
 export const ROLE_COLORS = {
-  [ROLES.SUPER_ADMIN]: '#8b5cf6',     // Púrpura
-  [ROLES.ARTIST_ADMIN]: '#ef4444',    // Rojo
   [ROLES.MANAGER]: '#f59e0b',         // Amarillo
   [ROLES.AGENT]: '#10b981',           // Verde
   [ROLES.MARKETING]: '#3b82f6',       // Azul
   [ROLES.PRESS]: '#ec4899',           // Rosa
-  [ROLES.EDITOR]: '#06b6d4',          // Cian
-  [ROLES.VIEWER]: '#6b7280'           // Gris
+  [ROLES.PRODUCER]: '#8b5cf6',        // Púrpura
+  [ROLES.SOUND_ENGINEER]: '#06b6d4',  // Cian
+  [ROLES.MUSICIAN]: '#ef4444',        // Rojo
+  [ROLES.PHOTOGRAPHER]: '#f97316',    // Naranja
+  [ROLES.VIDEOGRAPHER]: '#84cc16',    // Lima
+  [ROLES.DESIGNER]: '#a855f7',        // Violeta
+  [ROLES.SOCIAL_MEDIA]: '#14b8a6',    // Teal
+  [ROLES.BOOKING]: '#22c55e',         // Verde claro
+  [ROLES.OTHER]: '#6b7280'            // Gris
 };
 
-// Función para verificar si un rol tiene un permiso específico
-export const hasPermission = (userRole, permission) => {
-  if (!userRole || !permission) return false;
+// Colores para los niveles de acceso (para UI)
+export const ACCESS_LEVEL_COLORS = {
+  [ACCESS_LEVELS.SUPER_ADMIN]: '#8b5cf6',     // Púrpura
+  [ACCESS_LEVELS.ADMINISTRADOR]: '#ef4444',    // Rojo
+  [ACCESS_LEVELS.EDITOR]: '#f59e0b',          // Amarillo
+  [ACCESS_LEVELS.LECTOR]: '#6b7280'           // Gris
+};
+
+// Función para verificar si un nivel de acceso tiene un permiso específico
+export const hasPermission = (userAccessLevel, permission) => {
+  if (!userAccessLevel || !permission) {
+    console.log(`❌ hasPermission: Parámetros inválidos - AccessLevel: ${userAccessLevel}, Permission: ${permission}`);
+    return false;
+  }
   
-  const rolePermissions = ROLE_PERMISSIONS[userRole] || [];
-  return rolePermissions.includes(permission);
+  const accessLevelPermissions = ACCESS_LEVEL_PERMISSIONS[userAccessLevel] || [];
+  const hasAccess = accessLevelPermissions.includes(permission);
+  
+  console.log(`🔍 hasPermission - AccessLevel: ${userAccessLevel}, Permission: ${permission}, HasAccess: ${hasAccess}`);
+  if (userAccessLevel === ACCESS_LEVELS.SUPER_ADMIN) {
+    console.log(`🦾 SUPER_ADMIN permissions:`, accessLevelPermissions.slice(0, 5), '... (total:', accessLevelPermissions.length, ')');
+  }
+  
+  return hasAccess;
 };
 
 // Función para verificar múltiples permisos (AND)
-export const hasAllPermissions = (userRole, permissions) => {
-  if (!userRole || !permissions || !Array.isArray(permissions)) return false;
+export const hasAllPermissions = (userAccessLevel, permissions) => {
+  if (!userAccessLevel || !permissions || !Array.isArray(permissions)) return false;
   
-  return permissions.every(permission => hasPermission(userRole, permission));
+  return permissions.every(permission => hasPermission(userAccessLevel, permission));
 };
 
 // Función para verificar al menos uno de varios permisos (OR)
-export const hasAnyPermission = (userRole, permissions) => {
-  if (!userRole || !permissions || !Array.isArray(permissions)) return false;
+export const hasAnyPermission = (userAccessLevel, permissions) => {
+  if (!userAccessLevel || !permissions || !Array.isArray(permissions)) return false;
   
-  return permissions.some(permission => hasPermission(userRole, permission));
+  return permissions.some(permission => hasPermission(userAccessLevel, permission));
 };
 
-// Función para obtener todos los permisos de un rol
-export const getRolePermissions = (role) => {
-  return ROLE_PERMISSIONS[role] || [];
+// Función para obtener todos los permisos de un nivel de acceso
+export const getAccessLevelPermissions = (accessLevel) => {
+  return ACCESS_LEVEL_PERMISSIONS[accessLevel] || [];
 };
 
-// Función para verificar si un rol es administrativo
-export const isAdminRole = (role) => {
-  return [ROLES.SUPER_ADMIN, ROLES.ARTIST_ADMIN].includes(role);
+// Función para verificar si un nivel de acceso es administrativo
+export const isAdminAccessLevel = (accessLevel) => {
+  return [ACCESS_LEVELS.SUPER_ADMIN, ACCESS_LEVELS.ADMINISTRADOR].includes(accessLevel);
 };
 
-// Función para obtener roles disponibles para asignar (según el rol del usuario actual)
-export const getAssignableRoles = (currentUserRole) => {
-  switch (currentUserRole) {
-    case ROLES.SUPER_ADMIN:
-      return Object.values(ROLES); // Puede asignar cualquier rol
+// Función para obtener niveles de acceso disponibles para asignar (según el nivel del usuario actual)
+export const getAssignableAccessLevels = (currentUserAccessLevel) => {
+  switch (currentUserAccessLevel) {
+    case ACCESS_LEVELS.SUPER_ADMIN:
+      return Object.values(ACCESS_LEVELS); // Puede asignar cualquier nivel
       
-    case ROLES.ARTIST_ADMIN:
+    case ACCESS_LEVELS.ADMINISTRADOR:
       return [
-        ROLES.MANAGER,
-        ROLES.AGENT,
-        ROLES.MARKETING,
-        ROLES.PRESS,
-        ROLES.EDITOR,
-        ROLES.VIEWER
+        ACCESS_LEVELS.EDITOR,
+        ACCESS_LEVELS.LECTOR
       ]; // No puede crear otros admins
       
     default:
-      return []; // Otros roles no pueden asignar roles
+      return []; // Otros niveles no pueden asignar niveles
   }
 };
+
+// Función para obtener roles disponibles (siempre disponibles para todos)
+export const getAvailableRoles = () => {
+  return Object.values(ROLES);
+};
+
+// Retrocompatibilidad: mantener algunas funciones con nombres antiguos
+export const ROLE_PERMISSIONS = ACCESS_LEVEL_PERMISSIONS; // Para retrocompatibilidad
+export const getRolePermissions = getAccessLevelPermissions; // Para retrocompatibilidad
+export const isAdminRole = isAdminAccessLevel; // Para retrocompatibilidad
+export const getAssignableRoles = getAssignableAccessLevels; // Para retrocompatibilidad

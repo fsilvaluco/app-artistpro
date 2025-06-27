@@ -7,47 +7,29 @@ import { useNotification } from "../../contexts/NotificationContext";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import PermissionGuard from "../../components/PermissionGuard";
 import Sidebar from "../../components/Sidebar";
-import { getTeamMembers, createTeamMember, updateTeamMember, deleteTeamMember, addUserToTeam } from "../../utils/teamManagement";
-import { PERMISSIONS } from "../../utils/roles";
+import { getTeamMembers, createTeamMember, deleteTeamMember, addUserToTeam } from "../../utils/teamManagement";
+import { PERMISSIONS, ROLES, ROLE_LABELS, ROLE_COLORS, ACCESS_LEVELS, ACCESS_LEVEL_LABELS, ACCESS_LEVEL_COLORS } from "../../utils/roles";
 import UserSelector from "../../components/UserSelector";
 import styles from "./page.module.css";
 
-export default function EquipoPageWrapper() {
-  return (
-    <ProtectedRoute>
-      <PermissionGuard 
-        permission={PERMISSIONS.TEAM_VIEW}
-        fallback={
-          <div style={{ padding: '20px', textAlign: 'center' }}>
-            <h1>Acceso Denegado</h1>
-            <p>No tienes permisos para ver el equipo.</p>
-          </div>
-        }
-      >
-        <EquipoPage />
-      </PermissionGuard>
-    </ProtectedRoute>
-  );
-}
-
-function EquipoPage() {
-  const [theme, setTheme] = useState("system");
+export default function EquipoPage() {
   const [teamMembers, setTeamMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  
-  // Estados para el modal y formulario
-  const [showModal, setShowModal] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showUserSelector, setShowUserSelector] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [editingMember, setEditingMember] = useState(null);
+  const [openMenuId, setOpenMenuId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
-    role: '',
     email: '',
+    role: ROLES.OTHER,
+    accessLevel: ACCESS_LEVELS.LECTOR,
     department: ''
   });
-  const [selectedUser, setSelectedUser] = useState(null);
-  
+
   const { getUserData } = useSession();
   const { getCurrentArtist, getCurrentArtistId } = useArtist();
   const { showSuccess, showError, showProgress, removeNotification } = useNotification();
@@ -56,459 +38,604 @@ function EquipoPage() {
   const currentArtist = getCurrentArtist();
   const artistId = getCurrentArtistId();
 
-  // Función para cargar equipo
+  // Cargar equipo
   const loadTeam = async () => {
-    console.log("🔄 loadTeam called", { artistId, userId: userData?.uid });
-    
-    if (!userData?.uid) {
-      console.log("❌ No user");
-      setError("Usuario no autenticado");
-      return;
-    }
-    
-    if (!artistId) {
-      console.log("❌ No artist");
+    if (!userData?.uid || !artistId) {
       setTeamMembers([]);
+      setLoading(false);
       return;
     }
     
     try {
       setError(null);
       setLoading(true);
-      console.log("📡 Llamando getTeamMembers...");
       
       const members = await getTeamMembers(artistId, userData.uid);
-      console.log("✅ Respuesta recibida:", members);
-      
       setTeamMembers(members || []);
     } catch (err) {
-      console.error("❌ Error en loadTeam:", err);
-      setError(err.message || "Error desconocido");
-      setTeamMembers([]);
+      console.error("Error cargando equipo:", err);
+      setError(err.message || "Error al cargar el equipo");
     } finally {
-      console.log("🏁 loadTeam finished");
       setLoading(false);
     }
   };
 
-  // Efecto que se ejecuta cuando cambian los datos necesarios
   useEffect(() => {
-    console.log("🔍 useEffect:", { user: !!userData?.uid, artist: artistId });
-    
-    if (userData?.uid && artistId) {
-      loadTeam();
-    } else {
-      setLoading(false);
-      setTeamMembers([]);
-    }
+    loadTeam();
   }, [userData?.uid, artistId]);
 
-  // Funciones para manejar el modal
-  const openModal = (member = null) => {
-    if (member) {
-      setEditingMember(member);
-      setFormData({
-        name: member.name || '',
-        role: member.role || '',
-        email: member.email || '',
-        department: member.department || ''
-      });
-    } else {
-      setEditingMember(null);
-      setFormData({
-        name: '',
-        role: '',
-        email: '',
-        department: ''
-      });
-    }
-    setShowModal(true);
-  };
+  // Cerrar menú al hacer clic fuera
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (openMenuId && !event.target.closest(`.${styles.menuContainer}`)) {
+        closeMenu();
+      }
+    };
 
-  const closeModal = () => {
-    setShowModal(false);
-    setEditingMember(null);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [openMenuId]);
+
+  // Funciones del modal
+  const openInviteModal = () => {
+    setShowInviteModal(true);
     setSelectedUser(null);
     setFormData({
       name: '',
-      role: '',
       email: '',
+      role: ROLES.OTHER,
+      accessLevel: ACCESS_LEVELS.LECTOR,
       department: ''
     });
   };
 
-  // Función para guardar miembro
-  const saveMember = async () => {
-    if (!formData.role) {
-      showError("El rol es obligatorio");
-      return;
-    }
+  const closeInviteModal = () => {
+    setShowInviteModal(false);
+    setShowUserSelector(false);
+    setSelectedUser(null);
+    setFormData({
+      name: '',
+      email: '',
+      role: ROLES.OTHER,
+      accessLevel: ACCESS_LEVELS.LECTOR,
+      department: ''
+    });
+  };
 
-    // Si hay un usuario seleccionado, usar saveUserToTeam
-    if (selectedUser) {
-      return saveUserToTeam();
-    }
+  // Manejar selección de usuario
+  const handleUserSelect = (user) => {
+    setSelectedUser(user);
+    setShowUserSelector(false);
+    setFormData({
+      name: user.name || user.email,
+      email: user.email,
+      role: ROLES.OTHER,
+      accessLevel: ACCESS_LEVELS.LECTOR,
+      department: ''
+    });
+  };
 
-    // Validar campos para miembro manual
-    if (!formData.name || !formData.email) {
-      showError("Nombre y email son obligatorios para miembros manuales");
+  // Enviar invitación
+  const sendInvite = async () => {
+    if (!formData.email || !formData.role || !formData.accessLevel) {
+      showError("Email, rol y nivel de acceso son obligatorios");
       return;
     }
 
     let progressId;
     try {
       setLoading(true);
+      progressId = showProgress("Enviando invitación...");
       
-      const isEditing = !!editingMember;
-      const actionText = isEditing ? "Actualizando" : "Creando";
-      
-      progressId = showProgress(`${actionText} miembro del equipo...`);
-      
-      if (isEditing) {
-        // Actualizar miembro existente
-        await updateTeamMember(artistId, editingMember.id, formData);
-        console.log("✅ Miembro actualizado");
-        
-        if (progressId) removeNotification(progressId);
-        showSuccess(`Miembro "${formData.name}" actualizado correctamente`);
+      if (selectedUser) {
+        await addUserToTeam({
+          artistId,
+          userId: selectedUser.uid,
+          userEmail: selectedUser.email,
+          userName: selectedUser.name || selectedUser.email,
+          role: formData.role,
+          accessLevel: formData.accessLevel,
+          department: formData.department,
+          addedBy: userData.uid
+        });
       } else {
-        // Crear nuevo miembro manual
-        await createTeamMember(artistId, userData.uid, formData);
-        console.log("✅ Miembro creado");
-        
-        if (progressId) removeNotification(progressId);
-        showSuccess(`Miembro "${formData.name}" agregado al equipo`);
+        await createTeamMember(artistId, {
+          name: formData.name,
+          email: formData.email,
+          role: formData.role,
+          accessLevel: formData.accessLevel,
+          department: formData.department,
+          isManual: true,
+          createdBy: userData.uid
+        });
       }
       
-      closeModal();
-      await loadTeam(); // Recargar la lista
+      if (progressId) removeNotification(progressId);
+      showSuccess("Invitación enviada exitosamente");
+      closeInviteModal();
+      await loadTeam();
     } catch (err) {
-      console.error("❌ Error guardando miembro:", err);
+      console.error("Error enviando invitación:", err);
+      if (progressId) removeNotification(progressId);
+      showError(err.message || "Error al enviar la invitación");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Funciones para el menú desplegable
+  const toggleMenu = (memberId) => {
+    setOpenMenuId(openMenuId === memberId ? null : memberId);
+  };
+
+  const closeMenu = () => {
+    setOpenMenuId(null);
+  };
+
+  // Funciones para editar miembro
+  const openEditModal = (member) => {
+    setEditingMember(member);
+    setFormData({
+      name: member.name || '',
+      email: member.email || '',
+      role: member.role || ROLES.OTHER,
+      accessLevel: member.accessLevel || ACCESS_LEVELS.LECTOR,
+      department: member.department || ''
+    });
+    setShowEditModal(true);
+    closeMenu();
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditingMember(null);
+    setFormData({
+      name: '',
+      email: '',
+      role: ROLES.OTHER,
+      accessLevel: ACCESS_LEVELS.LECTOR,
+      department: ''
+    });
+  };
+
+  const saveEditMember = async () => {
+    if (!editingMember || !formData.role || !formData.accessLevel) {
+      showError("Rol y nivel de acceso son obligatorios");
+      return;
+    }
+
+    let progressId;
+    try {
+      setLoading(true);
+      progressId = showProgress("Actualizando miembro...");
+      
+      // Aquí necesitaremos implementar una función de actualización en teamManagement
+      // Por ahora, simularemos la actualización recreando el miembro
+      await deleteTeamMember(artistId, editingMember.id);
+      
+      await createTeamMember(artistId, {
+        name: formData.name,
+        email: formData.email,
+        role: formData.role,
+        accessLevel: formData.accessLevel,
+        department: formData.department,
+        isManual: true,
+        createdBy: userData.uid
+      });
       
       if (progressId) removeNotification(progressId);
-      showError(err.message || "Error al guardar el miembro");
+      showSuccess("Miembro actualizado exitosamente");
+      closeEditModal();
+      await loadTeam();
+    } catch (err) {
+      console.error("Error actualizando miembro:", err);
+      if (progressId) removeNotification(progressId);
+      showError(err.message || "Error al actualizar el miembro");
     } finally {
       setLoading(false);
     }
   };
 
   // Función para eliminar miembro
-  const deleteMember = async (memberId) => {
-    const member = teamMembers.find(m => m.id === memberId);
-    const memberName = member?.name || 'este miembro';
-    
-    if (!confirm(`¿Estás seguro de que quieres eliminar a ${memberName} del equipo?`)) {
+  const handleDeleteMember = async (member) => {
+    if (!confirm(`¿Estás seguro de que quieres eliminar a ${member.name} del equipo?`)) {
       return;
     }
 
     let progressId;
     try {
       setLoading(true);
+      progressId = showProgress("Eliminando miembro...");
       
-      progressId = showProgress(`Eliminando a ${memberName} del equipo...`);
-      
-      await deleteTeamMember(artistId, memberId);
-      console.log("✅ Miembro eliminado");
+      await deleteTeamMember(artistId, member.id);
       
       if (progressId) removeNotification(progressId);
-      showSuccess(`${memberName} eliminado del equipo`);
-      
-      await loadTeam(); // Recargar la lista
-    } catch (err) {
-      console.error("❌ Error eliminando miembro:", err);
-      
-      if (progressId) removeNotification(progressId);
-      showError(err.message || "Error al eliminar el miembro");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Funciones para manejar el selector de usuarios
-  const handleUserSelect = async (user) => {
-    // Cerrar el selector
-    setShowUserSelector(false);
-    
-    // Abrir modal para asignar rol
-    setSelectedUser(user);
-    setFormData({
-      name: user.name || user.email,
-      role: '',
-      email: user.email,
-      department: ''
-    });
-    setShowModal(true);
-  };
-
-  const saveUserToTeam = async () => {
-    if (!selectedUser || !formData.role) {
-      showError("Usuario y rol son obligatorios");
-      return;
-    }
-
-    let progressId;
-    try {
-      setLoading(true);
-      
-      progressId = showProgress(`Agregando ${selectedUser.name || selectedUser.email} al equipo...`);
-      
-      await addUserToTeam(artistId, userData.uid, selectedUser, formData.role, formData.department);
-      console.log("✅ Usuario agregado al equipo");
-      
-      if (progressId) removeNotification(progressId);
-      showSuccess(`${selectedUser.name || selectedUser.email} agregado al equipo como ${formData.role}`);
-      
-      closeModal();
+      showSuccess(`${member.name} eliminado del equipo`);
       await loadTeam();
     } catch (err) {
-      console.error("❌ Error agregando usuario:", err);
-      
+      console.error("Error eliminando miembro:", err);
       if (progressId) removeNotification(progressId);
-      showError(err.message || "Error al agregar el usuario al equipo");
+      showError(err.message || "Error al eliminar miembro");
     } finally {
       setLoading(false);
     }
+    
+    closeMenu();
   };
 
   return (
-    <Sidebar theme={theme} setTheme={setTheme}>
-      <div className={styles.equipo}>
-        <div className={styles.header}>
-          <div className={styles.titleSection}>
-            <h1>👥 Equipo</h1>
-            {currentArtist && (
-              <p>Gestiona el equipo de <strong>{currentArtist.name}</strong></p>
+    <ProtectedRoute>
+      <PermissionGuard 
+        permission={PERMISSIONS.TEAM_VIEW}
+        fallback={
+          <Sidebar theme="system">
+            <div style={{ padding: '20px', textAlign: 'center' }}>
+              <h1>Acceso Denegado</h1>
+              <p>No tienes permisos para ver el equipo.</p>
+            </div>
+          </Sidebar>
+        }
+      >
+        <Sidebar theme="system">
+          <div className={styles.container}>
+            {/* Header con breadcrumb */}
+            <div className={styles.header}>
+              <div className={styles.breadcrumb}>
+                <span>Tus equipos</span>
+              </div>
+              
+              <div className={styles.artistHeader}>
+                <div>
+                  <h1 className={styles.artistName}>
+                    {currentArtist?.name || "Selecciona un artista"}
+                  </h1>
+                </div>
+                
+                {artistId && (
+                  <PermissionGuard permission={PERMISSIONS.TEAM_INVITE}>
+                    <button 
+                      className={styles.inviteButton}
+                      onClick={openInviteModal}
+                      disabled={loading}
+                    >
+                      Invitar
+                    </button>
+                  </PermissionGuard>
+                )}
+              </div>
+
+              {/* Tabs de navegación */}
+              <div className={styles.tabs}>
+                <button className={`${styles.tab} ${styles.active}`}>
+                  Miembros del equipo
+                </button>
+                <button className={styles.tab}>
+                  Actividad
+                </button>
+                <button className={styles.tab}>
+                  Facturación
+                </button>
+              </div>
+            </div>
+
+            {/* Contenido principal */}
+            <div className={styles.content}>
+              {!artistId ? (
+                <div className={styles.emptyState}>
+                  <h2>Selecciona un artista</h2>
+                  <p>Para ver y gestionar el equipo, primero selecciona un artista.</p>
+                </div>
+              ) : (
+                <div className={styles.section}>
+                  <h2>Miembros</h2>
+                  
+                  {loading && (
+                    <div className={styles.loading}>
+                      <p>Cargando equipo...</p>
+                    </div>
+                  )}
+
+                  {error && (
+                    <div className={styles.error}>
+                      <p>Error: {error}</p>
+                      <button onClick={loadTeam}>Reintentar</button>
+                    </div>
+                  )}
+
+                  {!loading && !error && teamMembers.length === 0 && (
+                    <div className={styles.emptyState}>
+                      <p>No hay miembros en el equipo</p>
+                      <button onClick={openInviteModal} className={styles.inviteButton}>
+                        Invitar primer miembro
+                      </button>
+                    </div>
+                  )}
+
+                  {!loading && !error && teamMembers.length > 0 && (
+                    <div className={styles.membersList}>
+                      <div className={styles.membersHeader}>
+                        <div>Nombre</div>
+                        <div>Función</div>
+                        <div>Nivel De Acceso</div>
+                        <div>Administrar</div>
+                      </div>
+                      
+                      {teamMembers.map((member) => (
+                        <div key={member.id} className={styles.memberItem}>
+                          <div className={styles.memberInfo}>
+                            <div className={styles.avatar}>
+                              {member.name?.charAt(0)?.toUpperCase() || 'U'}
+                            </div>
+                            <div>
+                              <strong>{member.name || 'Sin nombre'}</strong>
+                              <p>{member.email || 'Sin email'}</p>
+                            </div>
+                          </div>
+                          
+                          <div className={styles.memberFunction}>
+                            {ROLE_LABELS[member.role] || member.department || 'Sin función'}
+                          </div>
+                          
+                          <div className={styles.memberRole}>
+                            <span 
+                              className={styles.roleBadge}
+                              style={{ 
+                                backgroundColor: ACCESS_LEVEL_COLORS[member.accessLevel] || '#6b7280',
+                                color: 'white'
+                              }}
+                            >
+                              {ACCESS_LEVEL_LABELS[member.accessLevel] || member.accessLevel || 'Lector'}
+                            </span>
+                          </div>
+                          
+                          <div className={styles.memberActions}>
+                            <PermissionGuard permission={PERMISSIONS.TEAM_EDIT}>
+                              <div className={styles.menuContainer}>
+                                <button 
+                                  className={styles.menuButton}
+                                  onClick={() => toggleMenu(member.id)}
+                                >
+                                  ⋯
+                                </button>
+
+                                {openMenuId === member.id && (
+                                  <div className={styles.dropdownMenu}>
+                                    <button 
+                                      className={styles.menuItem}
+                                      onClick={() => openEditModal(member)}
+                                    >
+                                      <span className={styles.menuIcon}>✏️</span>
+                                      Editar
+                                    </button>
+                                    <button 
+                                      className={styles.menuItem}
+                                      onClick={() => handleDeleteMember(member)}
+                                    >
+                                      <span className={styles.menuIcon}>🗑️</span>
+                                      Eliminar
+                                    </button>
+                                  </div>
+                                )}
+                              </div>
+                            </PermissionGuard>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Modal de invitación */}
+            {showInviteModal && (
+              <div className={styles.modalOverlay} onClick={closeInviteModal}>
+                <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                  <div className={styles.modalHeader}>
+                    <h3>Invitar al equipo</h3>
+                    <button onClick={closeInviteModal} className={styles.closeButton}>
+                      ✕
+                    </button>
+                  </div>
+                  
+                  <div className={styles.modalContent}>
+                    <div className={styles.modalTabs}>
+                      <button 
+                        className={`${styles.modalTab} ${!showUserSelector ? styles.active : ''}`}
+                        onClick={() => {
+                          setShowUserSelector(false);
+                          setSelectedUser(null);
+                        }}
+                      >
+                        Invitar por email
+                      </button>
+                      <button 
+                        className={`${styles.modalTab} ${showUserSelector ? styles.active : ''}`}
+                        onClick={() => setShowUserSelector(true)}
+                      >
+                        Seleccionar usuario
+                      </button>
+                    </div>
+
+                    {showUserSelector ? (
+                      <div className={styles.userSelectorContainer}>
+                        <UserSelector 
+                          onSelect={handleUserSelect}
+                          onClose={() => setShowUserSelector(false)}
+                        />
+                      </div>
+                    ) : (
+                      <div className={styles.form}>
+                        {selectedUser && (
+                          <div className={styles.selectedUserInfo}>
+                            <p><strong>Usuario seleccionado:</strong> {selectedUser.name || selectedUser.email}</p>
+                          </div>
+                        )}
+
+                        <div className={styles.formGroup}>
+                          <label>Nombre</label>
+                          <input
+                            type="text"
+                            value={formData.name}
+                            onChange={(e) => setFormData({...formData, name: e.target.value})}
+                            placeholder="Nombre completo"
+                            disabled={!!selectedUser}
+                          />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                          <label>Email</label>
+                          <input
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                            placeholder="usuario@ejemplo.com"
+                            disabled={!!selectedUser}
+                          />
+                        </div>
+
+                        <div className={styles.formGroup}>
+                          <label>Función/Rol</label>
+                          <select
+                            value={formData.role}
+                            onChange={(e) => setFormData({...formData, role: e.target.value})}
+                          >
+                            {Object.entries(ROLE_LABELS).map(([key, label]) => (
+                              <option key={key} value={key}>{label}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                          <label>Nivel de Acceso</label>
+                          <select
+                            value={formData.accessLevel}
+                            onChange={(e) => setFormData({...formData, accessLevel: e.target.value})}
+                          >
+                            {Object.entries(ACCESS_LEVEL_LABELS).map(([key, label]) => (
+                              <option key={key} value={key}>{label}</option>
+                            ))}
+                          </select>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                          <label>Departamento (opcional)</label>
+                          <input
+                            type="text"
+                            value={formData.department}
+                            onChange={(e) => setFormData({...formData, department: e.target.value})}
+                            placeholder="ej: Artístico, Producción, Marketing"
+                          />
+                        </div>
+
+                        <div className={styles.modalFooter}>
+                          <button onClick={closeInviteModal} className={styles.cancelButton}>
+                            Cancelar
+                          </button>
+                          <button 
+                            onClick={sendInvite} 
+                            className={styles.inviteButton}
+                            disabled={loading}
+                          >
+                            {loading ? 'Enviando...' : 'Enviar invitación'}
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Modal de edición */}
+            {showEditModal && editingMember && (
+              <div className={styles.modalOverlay} onClick={closeEditModal}>
+                <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+                  <div className={styles.modalHeader}>
+                    <h3>Editar miembro</h3>
+                    <button onClick={closeEditModal} className={styles.closeButton}>
+                      ✕
+                    </button>
+                  </div>
+                  
+                  <div className={styles.modalContent}>
+                    <div className={styles.form}>
+                      <div className={styles.formGroup}>
+                        <label>Nombre</label>
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => setFormData({...formData, name: e.target.value})}
+                          placeholder="Nombre completo"
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label>Email</label>
+                        <input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({...formData, email: e.target.value})}
+                          placeholder="usuario@ejemplo.com"
+                        />
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label>Función/Rol</label>
+                        <select
+                          value={formData.role}
+                          onChange={(e) => setFormData({...formData, role: e.target.value})}
+                        >
+                          {Object.entries(ROLE_LABELS).map(([key, label]) => (
+                            <option key={key} value={key}>{label}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label>Nivel de Acceso</label>
+                        <select
+                          value={formData.accessLevel}
+                          onChange={(e) => setFormData({...formData, accessLevel: e.target.value})}
+                        >
+                          {Object.entries(ACCESS_LEVEL_LABELS).map(([key, label]) => (
+                            <option key={key} value={key}>{label}</option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div className={styles.formGroup}>
+                        <label>Departamento (opcional)</label>
+                        <input
+                          type="text"
+                          value={formData.department}
+                          onChange={(e) => setFormData({...formData, department: e.target.value})}
+                          placeholder="ej: Artístico, Producción, Marketing"
+                        />
+                      </div>
+
+                      <div className={styles.modalFooter}>
+                        <button onClick={closeEditModal} className={styles.cancelButton}>
+                          Cancelar
+                        </button>
+                        <button 
+                          onClick={saveEditMember} 
+                          className={styles.inviteButton}
+                          disabled={loading}
+                        >
+                          {loading ? 'Guardando...' : 'Guardar cambios'}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
-          {artistId && (
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <PermissionGuard permission={PERMISSIONS.TEAM_INVITE}>
-                <button 
-                  onClick={() => setShowUserSelector(true)}
-                  className={styles.addButton}
-                  disabled={loading}
-                >
-                  👤 Agregar Usuario
-                </button>
-              </PermissionGuard>
-              <PermissionGuard permission={PERMISSIONS.TEAM_EDIT}>
-                <button 
-                  onClick={() => openModal()}
-                  className={styles.addButton}
-                  disabled={loading}
-                  style={{ background: '#6b7280' }}
-                >
-                  ➕ Crear Miembro
-                </button>
-              </PermissionGuard>
-            </div>
-          )}
-        </div>
-
-        {/* Info de debugging */}
-        <div className={styles.debugInfo}>
-          <p><strong>Usuario:</strong> {userData?.email || 'No autenticado'}</p>
-          <p><strong>Artista:</strong> {currentArtist?.name || 'No seleccionado'}</p>
-          <p><strong>Artist ID:</strong> {artistId || 'N/A'}</p>
-          <p><strong>Loading:</strong> {loading ? 'Sí' : 'No'}</p>
-          <p><strong>Miembros:</strong> {teamMembers.length}</p>
-          {error && <p style={{color: 'red'}}><strong>Error:</strong> {error}</p>}
-          <button 
-            onClick={loadTeam} 
-            style={{ 
-              marginTop: '10px', 
-              padding: '8px 15px', 
-              cursor: 'pointer',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px'
-            }}
-          >
-            🔄 Recargar
-          </button>
-        </div>
-
-        {/* Contenido */}
-        {!userData?.uid ? (
-          <div className={styles.noArtist}>
-            <h2>🚪 No autenticado</h2>
-            <p>Necesitas estar autenticado para ver esta página.</p>
-          </div>
-        ) : !artistId ? (
-          <div className={styles.noArtist}>
-            <h2>🎨 Selecciona un artista</h2>
-            <p>Para gestionar el equipo, primero selecciona un artista.</p>
-          </div>
-        ) : loading ? (
-          <div className={styles.loading}>
-            <div className={styles.spinner}></div>
-            <p>Cargando equipo...</p>
-          </div>
-        ) : error ? (
-          <div className={styles.error}>
-            <h3>❌ Error</h3>
-            <p>{error}</p>
-            <button onClick={loadTeam} className={styles.retryButton}>
-              🔄 Reintentar
-            </button>
-          </div>
-        ) : teamMembers.length === 0 ? (
-          <div className={styles.emptyState}>
-            <h3>👥 Sin miembros</h3>
-            <p>Este artista no tiene miembros en su equipo.</p>
-            <p>Ve a <strong>Admin → Poblar Equipos</strong> para crear datos de muestra.</p>
-          </div>
-        ) : (
-          <div className={styles.teamList}>
-            <h3>Miembros del Equipo ({teamMembers.length})</h3>
-            <div className={styles.memberCards}>
-              {teamMembers.map(member => (
-                <div key={member.id} className={`${styles.memberCard} ${member.type === 'user_reference' ? styles.userMember : styles.manualMember}`}>
-                  <div className={styles.memberInfo}>
-                    <div className={styles.memberHeader}>
-                      <h4>{member.name}</h4>
-                      {member.type === 'user_reference' && (
-                        <span className={styles.userBadge}>👤 Usuario</span>
-                      )}
-                      {member.type === 'legacy' && (
-                        <span className={styles.legacyBadge}>📝 Manual</span>
-                      )}
-                    </div>
-                    <p><strong>Rol:</strong> {member.role}</p>
-                    <p><strong>Email:</strong> {member.email}</p>
-                    {member.department && <p><strong>Departamento:</strong> {member.department}</p>}
-                  </div>
-                  <div className={styles.memberActions}>
-                    <PermissionGuard permission={PERMISSIONS.TEAM_EDIT}>
-                      <button 
-                        onClick={() => openModal(member)}
-                        className={styles.editButton}
-                        disabled={loading}
-                      >
-                        ✏️ Editar
-                      </button>
-                    </PermissionGuard>
-                    <PermissionGuard permission={PERMISSIONS.TEAM_DELETE}>
-                      <button 
-                        onClick={() => deleteMember(member.id)}
-                        className={styles.deleteButton}
-                        disabled={loading}
-                      >
-                        🗑️ Eliminar
-                      </button>
-                    </PermissionGuard>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Modal para agregar/editar miembro */}
-        {showModal && (
-          <div className={styles.modalOverlay} onClick={closeModal}>
-            <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-              <div className={styles.modalHeader}>
-                <h3>
-                  {selectedUser ? `Agregar ${selectedUser.name || selectedUser.email} al equipo` :
-                   editingMember ? 'Editar Miembro' : 'Crear Miembro Manual'}
-                </h3>
-                <button onClick={closeModal} className={styles.closeButton}>✕</button>
-              </div>
-              
-              <div className={styles.modalBody}>
-                {selectedUser && (
-                  <div className={styles.selectedUserInfo}>
-                    <p><strong>Usuario seleccionado:</strong> {selectedUser.name || selectedUser.email}</p>
-                    <p><strong>Email:</strong> {selectedUser.email}</p>
-                  </div>
-                )}
-                
-                <div className={styles.formGroup}>
-                  <label>Nombre {!selectedUser && '*'}</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    placeholder="Nombre completo"
-                    disabled={!!selectedUser}
-                  />
-                </div>
-                
-                <div className={styles.formGroup}>
-                  <label>Rol *</label>
-                  <input
-                    type="text"
-                    value={formData.role}
-                    onChange={(e) => setFormData({...formData, role: e.target.value})}
-                    placeholder="ej: musician, producer, manager"
-                  />
-                </div>
-                
-                <div className={styles.formGroup}>
-                  <label>Email {!selectedUser && '*'}</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({...formData, email: e.target.value})}
-                    placeholder="correo@ejemplo.com"
-                    disabled={!!selectedUser}
-                  />
-                </div>
-                
-                <div className={styles.formGroup}>
-                  <label>Departamento</label>
-                  <input
-                    type="text"
-                    value={formData.department}
-                    onChange={(e) => setFormData({...formData, department: e.target.value})}
-                    placeholder="ej: Artístico, Producción, Administración"
-                  />
-                </div>
-              </div>
-              
-              <div className={styles.modalFooter}>
-                <button onClick={closeModal} className={styles.cancelButton}>
-                  Cancelar
-                </button>
-                <button onClick={saveMember} className={styles.saveButton} disabled={loading}>
-                  {loading ? 'Guardando...' : 
-                   selectedUser ? 'Agregar al Equipo' :
-                   editingMember ? 'Actualizar' : 'Crear'}
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Selector de usuarios */}
-        {showUserSelector && (
-          <UserSelector
-            onSelect={handleUserSelect}
-            onClose={() => setShowUserSelector(false)}
-          />
-        )}
-
-        {/* Selector de usuarios */}
-        {showUserSelector && (
-          <div className={styles.modalOverlay} onClick={() => setShowUserSelector(false)}>
-            <div className={styles.userSelector} onClick={(e) => e.stopPropagation()}>
-              <div className={styles.selectorHeader}>
-                <h3>Seleccionar Usuario</h3>
-                <button onClick={() => setShowUserSelector(false)} className={styles.closeButton}>✕</button>
-              </div>
-              
-              <div className={styles.selectorBody}>
-                <UserSelector 
-                  onSelect={handleUserSelect}
-                  onClose={() => setShowUserSelector(false)}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </Sidebar>
+        </Sidebar>
+      </PermissionGuard>
+    </ProtectedRoute>
   );
 }

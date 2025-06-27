@@ -116,8 +116,15 @@ const INITIAL_ADMINS = [
 
 // Verificar si un usuario es administrador inicial
 export const isInitialAdmin = (userEmail) => {
-  const isAdmin = INITIAL_ADMINS.includes(userEmail?.toLowerCase());
-  console.log(`🔍 Verificando administrador inicial para ${userEmail}: ${isAdmin}`);
+  if (!userEmail) {
+    console.log("❌ isInitialAdmin: userEmail no proporcionado");
+    return false;
+  }
+  
+  const emailLower = userEmail.toLowerCase();
+  const isAdmin = INITIAL_ADMINS.includes(emailLower);
+  console.log(`🔍 Verificando administrador inicial para ${userEmail} (${emailLower}): ${isAdmin}`);
+  console.log(`📋 Lista de admins iniciales:`, INITIAL_ADMINS);
   return isAdmin;
 };
 
@@ -300,5 +307,30 @@ export const getArtistRequests = async () => {
   } catch (error) {
     console.error("Error getting all requests:", error);
     return [];
+  }
+};
+
+// Otorgar rol de super administrador automáticamente
+export const grantSuperAdminRole = async (userId, userEmail, userName) => {
+  try {
+    if (!isInitialAdmin(userEmail)) {
+      console.log("❌ Usuario no es administrador inicial:", userEmail);
+      return false;
+    }
+
+    console.log("🔑 Asignando rol de Super Administrador a:", userEmail);
+
+    // Importar función para establecer rol
+    const { setUserRole } = await import('./roleManagement');
+    const { ROLES } = await import('./roles');
+
+    // Asignar rol de super admin (sin necesidad de artista específico)
+    await setUserRole(userId, 'global', ROLES.SUPER_ADMIN, 'system');
+    
+    console.log("✅ Rol de Super Administrador asignado correctamente");
+    return true;
+  } catch (error) {
+    console.error("Error assigning super admin role:", error);
+    throw error;
   }
 };
