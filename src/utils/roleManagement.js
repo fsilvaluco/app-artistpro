@@ -12,11 +12,22 @@ import {
   serverTimestamp 
 } from "firebase/firestore";
 import { db } from "../app/firebase";
-import { ROLES, hasPermission, isAdminRole } from "./roles";
+import { ROLES, ACCESS_LEVELS, hasPermission, isAdminRole } from "./roles";
 
 // Crear o actualizar rol de usuario en un artista
 export const setUserRole = async (userId, artistId, role, assignedBy) => {
   try {
+    // Validar que todos los parámetros requeridos estén presentes
+    if (!userId || !artistId || !role || !assignedBy) {
+      throw new Error(`Parámetros faltantes: userId=${userId}, artistId=${artistId}, role=${role}, assignedBy=${assignedBy}`);
+    }
+
+    // Validar que el rol sea válido
+    const validRoles = [...Object.values(ROLES), ...Object.values(ACCESS_LEVELS)];
+    if (!validRoles.includes(role)) {
+      throw new Error(`Rol inválido: ${role}. Roles válidos: ${validRoles.join(', ')}`);
+    }
+
     // Verificar si ya existe un rol para este usuario y artista
     const existingRoleQuery = query(
       collection(db, "userRoles"),
@@ -76,7 +87,7 @@ export const getUserRole = async (userId, artistId) => {
     if (userDoc.exists()) {
       const userData = userDoc.data();
       if (userData.isSuperAdmin) {
-        return ROLES.SUPER_ADMIN;
+        return ACCESS_LEVELS.SUPER_ADMIN;
       }
     }
     
@@ -214,6 +225,17 @@ export const getPotentialAdmins = async (artistId) => {
 // Actualizar solicitud de acceso con rol específico
 export const updateArtistRequestWithRole = async (requestId, newRole, adminUserId) => {
   try {
+    // Validar parámetros de entrada
+    if (!requestId || !newRole || !adminUserId) {
+      throw new Error(`Parámetros faltantes: requestId=${requestId}, newRole=${newRole}, adminUserId=${adminUserId}`);
+    }
+
+    // Validar que el rol sea válido
+    const validRoles = [...Object.values(ROLES), ...Object.values(ACCESS_LEVELS)];
+    if (!validRoles.includes(newRole)) {
+      throw new Error(`Rol inválido: ${newRole}. Roles válidos: ${validRoles.join(', ')}`);
+    }
+
     // Obtener la solicitud
     const requestDoc = await getDoc(doc(db, "artistRequests", requestId));
     
@@ -250,7 +272,7 @@ export const updateArtistRequestWithRole = async (requestId, newRole, adminUserI
 // Promover usuario a administrador
 export const promoteToAdmin = async (userId, artistId, promotedBy) => {
   try {
-    await setUserRole(userId, artistId, ROLES.ARTIST_ADMIN, promotedBy);
+    await setUserRole(userId, artistId, ACCESS_LEVELS.ADMINISTRADOR, promotedBy);
     return true;
   } catch (error) {
     console.error("Error promoting to admin:", error);

@@ -4,12 +4,11 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "./firebase";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "../contexts/SessionContext";
 
 export default function Home() {
-  const [theme, setTheme] = useState("system");
   const router = useRouter();
   const { user, loading } = useSession();
 
@@ -19,20 +18,6 @@ export default function Home() {
       router.push("/inicio");
     }
   }, [user, loading, router]);
-
-  useEffect(() => {
-    if (theme === "system") {
-      const mq = window.matchMedia("(prefers-color-scheme: dark)");
-      document.body.dataset.theme = mq.matches ? "dark" : "light";
-      const handler = (e) => {
-        document.body.dataset.theme = e.matches ? "dark" : "light";
-      };
-      mq.addEventListener("change", handler);
-      return () => mq.removeEventListener("change", handler);
-    } else {
-      document.body.dataset.theme = theme;
-    }
-  }, [theme]);
 
   // Función para login con Google
   const handleGoogleLogin = async () => {

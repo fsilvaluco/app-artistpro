@@ -322,10 +322,10 @@ export const grantSuperAdminRole = async (userId, userEmail, userName) => {
 
     // Importar función para establecer rol
     const { setUserRole } = await import('./roleManagement');
-    const { ROLES } = await import('./roles');
+    const { ACCESS_LEVELS } = await import('./roles');
 
     // Asignar rol de super admin (sin necesidad de artista específico)
-    await setUserRole(userId, 'global', ROLES.SUPER_ADMIN, 'system');
+    await setUserRole(userId, 'global', ACCESS_LEVELS.SUPER_ADMIN, 'system');
     
     console.log("✅ Rol de Super Administrador asignado correctamente");
     return true;

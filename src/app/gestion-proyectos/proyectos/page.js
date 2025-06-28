@@ -34,12 +34,11 @@ export default function ProyectosPageWrapper() {
 }
 
 function ProyectosPage() {
-  const [theme, setTheme] = useState("system");
   const { getUserData } = useSession();
   const userData = getUserData();
 
   return (
-    <Sidebar theme={theme} setTheme={setTheme}>
+    <Sidebar>
       <Proyectos userData={userData} />
     </Sidebar>
   );

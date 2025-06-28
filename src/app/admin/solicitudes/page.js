@@ -55,6 +55,21 @@ export default function AdminSolicitudes() {
     const selectedRole = selectedRoles[requestId] || ROLES.VIEWER;
     const request = requests.find(r => r.id === requestId);
     
+    // Debug logging
+    console.log("🔍 Debug aprobación:", {
+      requestId,
+      selectedRole,
+      selectedRolesState: selectedRoles,
+      ROLES_VIEWER: ROLES.VIEWER,
+      hasSelectedRole: selectedRoles.hasOwnProperty(requestId)
+    });
+    
+    // Validación adicional antes de proceder
+    if (!selectedRole) {
+      showError("Error: No se pudo determinar el rol a asignar");
+      return;
+    }
+    
     let progressId;
     try {
       setActionLoading(prev => ({ ...prev, [requestId]: true }));

@@ -12,7 +12,8 @@ export const ROLES = {
   DESIGNER: 'designer',              // Diseñador gráfico
   SOCIAL_MEDIA: 'social_media',      // Community manager
   BOOKING: 'booking',                // Booking agent
-  OTHER: 'other'                     // Otro rol
+  OTHER: 'other',                    // Otro rol
+  VIEWER: 'lector'                   // Alias para nivel básico de lectura
 };
 
 // Definición de niveles de acceso/permisos
@@ -20,7 +21,8 @@ export const ACCESS_LEVELS = {
   SUPER_ADMIN: 'super_admin',        // Acceso total al sistema
   ADMINISTRADOR: 'administrador',    // Administrador del artista
   EDITOR: 'editor',                  // Editor con permisos limitados
-  LECTOR: 'lector'                   // Solo lectura
+  LECTOR: 'lector',                  // Solo lectura
+  VIEWER: 'lector'                   // Alias para LECTOR (retrocompatibilidad)
 };
 
 // Permisos por módulo
@@ -144,7 +146,8 @@ export const ROLE_LABELS = {
   [ROLES.DESIGNER]: 'Diseñador',
   [ROLES.SOCIAL_MEDIA]: 'Community Manager',
   [ROLES.BOOKING]: 'Booking Agent',
-  [ROLES.OTHER]: 'Otro'
+  [ROLES.OTHER]: 'Otro',
+  [ROLES.VIEWER]: 'Lector'
 };
 
 // Labels legibles para los niveles de acceso
@@ -169,7 +172,8 @@ export const ROLE_DESCRIPTIONS = {
   [ROLES.DESIGNER]: 'Diseño gráfico y material promocional',
   [ROLES.SOCIAL_MEDIA]: 'Gestión de redes sociales y comunidad',
   [ROLES.BOOKING]: 'Gestión de shows y eventos en vivo',
-  [ROLES.OTHER]: 'Función especializada no listada'
+  [ROLES.OTHER]: 'Función especializada no listada',
+  [ROLES.VIEWER]: 'Solo puede ver la información, sin permisos de edición'
 };
 
 // Descripciones de los niveles de acceso
@@ -194,7 +198,8 @@ export const ROLE_COLORS = {
   [ROLES.DESIGNER]: '#a855f7',        // Violeta
   [ROLES.SOCIAL_MEDIA]: '#14b8a6',    // Teal
   [ROLES.BOOKING]: '#22c55e',         // Verde claro
-  [ROLES.OTHER]: '#6b7280'            // Gris
+  [ROLES.OTHER]: '#6b7280',           // Gris
+  [ROLES.VIEWER]: '#6b7280'           // Gris
 };
 
 // Colores para los niveles de acceso (para UI)

@@ -8,8 +8,6 @@ import { PERMISSIONS } from "../../utils/roles";
 import styles from "./page.module.css";
 
 export default function NotasPage() {
-  const [theme, setTheme] = useState("system");
-
   return (
     <ProtectedRoute>
       <PermissionGuard 
@@ -21,7 +19,7 @@ export default function NotasPage() {
           </div>
         }
       >
-        <Sidebar theme={theme} setTheme={setTheme}>
+        <Sidebar>
           <div className={styles.container}>
             <div className={styles.header}>
               <h1>📝 Notas y Documentos</h1>

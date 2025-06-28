@@ -8,8 +8,6 @@ import { PERMISSIONS } from "../../utils/roles";
 import styles from "./page.module.css";
 
 export default function BlogPage() {
-  const [theme, setTheme] = useState("system");
-
   return (
     <ProtectedRoute>
       <PermissionGuard 
@@ -21,7 +19,7 @@ export default function BlogPage() {
           </div>
         }
       >
-        <Sidebar theme={theme} setTheme={setTheme}>
+        <Sidebar>
           <div className={styles.container}>
             <div className={styles.header}>
               <h1>📝 Blog & Comunicados</h1>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Sidebar from "../../components/Sidebar";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import { useSession } from "../../contexts/SessionContext";
@@ -18,29 +17,14 @@ export default function InicioPageWrapper() {
 }
 
 function InicioPage() {
-  const [theme, setTheme] = useState("system");
   const { getUserData } = useSession();
   const { getCurrentArtist, getCurrentArtistName } = useArtist();
   const { projects, tasks, loading } = useProject();
   const userData = getUserData();
   const currentArtist = getCurrentArtist();
 
-  useEffect(() => {
-    if (theme === "system") {
-      const mq = window.matchMedia("(prefers-color-scheme: dark)");
-      document.body.dataset.theme = mq.matches ? "dark" : "light";
-      const handler = (e) => {
-        document.body.dataset.theme = e.matches ? "dark" : "light";
-      };
-      mq.addEventListener("change", handler);
-      return () => mq.removeEventListener("change", handler);
-    } else {
-      document.body.dataset.theme = theme;
-    }
-  }, [theme]);
-  
   return (
-    <Sidebar theme={theme} setTheme={setTheme}>
+    <Sidebar>
       <Inicio 
         userData={userData} 
         currentArtist={currentArtist}

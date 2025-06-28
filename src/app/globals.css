@@ -1,24 +1,148 @@
+/* Tema claro por defecto */
 :root {
+  /* Colores de fondo */
   --background: #ffffff;
-  --foreground: #171717;
   --bg: #fafafa;
-  --card: #fff;
-  --text: #111;
-  --text2: #444;
-  --button-bg: #fff;
-  --button-text: #111;
+  --bg-secondary: #f8f9fa;
+  --bg-tertiary: #e9ecef;
+  
+  /* Colores de superficie */
+  --surface-primary: #ffffff;
+  --surface-secondary: #f8f9fa;
+  --surface-tertiary: #e9ecef;
+  
+  /* Colores de tarjetas y contenedores */
+  --card-background: #ffffff;
+  --card-border: #e5e7eb;
+  
+  /* Colores de texto */
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  --text-inverse: #ffffff;
+  
+  /* Colores de bordes */
+  --border-color: #e5e7eb;
+  --border-light: #f3f4f6;
+  --border-dark: #d1d5db;
+  
+  /* Colores de botones */
+  --button-primary: #3b82f6;
+  --button-primary-hover: #2563eb;
+  --button-secondary: #6b7280;
+  --button-secondary-hover: #4b5563;
+  
+  /* Colores de estado */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  
+  /* Variables legacy para compatibilidad */
+  --foreground: var(--text-primary);
+  --card: var(--card-background);
+  --text: var(--text-primary);
+  --text2: var(--text-secondary);
+  --button-bg: var(--surface-primary);
+  --button-text: var(--text-primary);
 }
 
+/* Tema oscuro */
+:root[data-theme="dark"], 
+:root.dark {
+  /* Colores de fondo */
+  --background: #0f172a;
+  --bg: #1e293b;
+  --bg-secondary: #334155;
+  --bg-tertiary: #475569;
+  
+  /* Colores de superficie */
+  --surface-primary: #1e293b;
+  --surface-secondary: #334155;
+  --surface-tertiary: #475569;
+  
+  /* Colores de tarjetas y contenedores */
+  --card-background: #1e293b;
+  --card-border: #475569;
+  
+  /* Colores de texto */
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-tertiary: #94a3b8;
+  --text-inverse: #0f172a;
+  
+  /* Colores de bordes */
+  --border-color: #475569;
+  --border-light: #374151;
+  --border-dark: #6b7280;
+  
+  /* Colores de botones */
+  --button-primary: #3b82f6;
+  --button-primary-hover: #2563eb;
+  --button-secondary: #6b7280;
+  --button-secondary-hover: #9ca3af;
+  
+  /* Colores de estado */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+  
+  /* Sombras */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+  
+  /* Variables legacy para compatibilidad */
+  --foreground: var(--text-primary);
+  --card: var(--card-background);
+  --text: var(--text-primary);
+  --text2: var(--text-secondary);
+  --button-bg: var(--surface-primary);
+  --button-text: var(--text-primary);
+}
+
+/* Fallback para preferencia del sistema en navegadores que no soporten data-theme */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --bg: #181818;
-    --card: #232323;
-    --text: #fff;
-    --text2: #bbb;
-    --button-bg: #232323;
-    --button-text: #fff;
+  :root:not([data-theme]) {
+    /* Colores de fondo */
+    --background: #0f172a;
+    --bg: #1e293b;
+    --bg-secondary: #334155;
+    --bg-tertiary: #475569;
+    
+    /* Colores de superficie */
+    --surface-primary: #1e293b;
+    --surface-secondary: #334155;
+    --surface-tertiary: #475569;
+    
+    /* Colores de tarjetas y contenedores */
+    --card-background: #1e293b;
+    --card-border: #475569;
+    
+    /* Colores de texto */
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --text-inverse: #0f172a;
+    
+    /* Colores de bordes */
+    --border-color: #475569;
+    --border-light: #374151;
+    --border-dark: #6b7280;
+    
+    /* Variables legacy */
+    --foreground: var(--text-primary);
+    --card: var(--card-background);
+    --text: var(--text-primary);
+    --text2: var(--text-secondary);
+    --button-bg: var(--surface-primary);
+    --button-text: var(--text-primary);
   }
 }
 

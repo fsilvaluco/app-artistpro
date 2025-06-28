@@ -3,13 +3,15 @@ import styles from "./Sidebar.module.css";
 import Link from "next/link";
 import { useState } from "react";
 import { useSession } from "../contexts/SessionContext";
+import { useTheme } from "../contexts/ThemeContext";
 
-export default function Sidebar({ children, theme, setTheme }) {
+export default function Sidebar({ children }) {
   const [open, setOpen] = useState({ 
     analisis: false,
     gestionProyectos: false 
   });
   const { logout, getUserData } = useSession();
+  const { theme, setTheme } = useTheme();
   const userData = getUserData();
 
   const handleLogout = () => {

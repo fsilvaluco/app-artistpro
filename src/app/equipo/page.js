@@ -270,7 +270,7 @@ export default function EquipoPage() {
       <PermissionGuard 
         permission={PERMISSIONS.TEAM_VIEW}
         fallback={
-          <Sidebar theme="system">
+          <Sidebar>
             <div style={{ padding: '20px', textAlign: 'center' }}>
               <h1>Acceso Denegado</h1>
               <p>No tienes permisos para ver el equipo.</p>
@@ -278,7 +278,7 @@ export default function EquipoPage() {
           </Sidebar>
         }
       >
-        <Sidebar theme="system">
+        <Sidebar>
           <div className={styles.container}>
             {/* Header con breadcrumb */}
             <div className={styles.header}>
