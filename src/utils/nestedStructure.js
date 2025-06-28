@@ -53,10 +53,9 @@ export const getNestedProjects = async (artistId, userId) => {
     
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      // Filtrar por userId como seguridad adicional
-      if (data.userId === userId) {
-        projects.push({ id: doc.id, ...data });
-      }
+      // Todos los usuarios con acceso al artista pueden ver todos los proyectos
+      // La seguridad se maneja a nivel de AccessContext
+      projects.push({ id: doc.id, ...data });
     });
     
     return projects;
@@ -143,10 +142,9 @@ export const getNestedTasks = async (artistId, userId) => {
     
     querySnapshot.forEach((doc) => {
       const data = doc.data();
-      // Filtrar por userId como seguridad adicional
-      if (data.userId === userId) {
-        tasks.push({ id: doc.id, ...data });
-      }
+      // Todos los usuarios con acceso al artista pueden ver todas las tareas
+      // La seguridad se maneja a nivel de AccessContext
+      tasks.push({ id: doc.id, ...data });
     });
     
     return tasks;

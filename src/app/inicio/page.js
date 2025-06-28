@@ -5,6 +5,7 @@ import ProtectedRoute from "../../components/ProtectedRoute";
 import { useSession } from "../../contexts/SessionContext";
 import { useArtist } from "../../contexts/ArtistContext";
 import { useProject } from "../../contexts/ProjectContext";
+import { useNotification } from "../../contexts/NotificationContext";
 import CategoryBadge from "../../components/CategoryBadge";
 import styles from "./inicio.module.css";
 
@@ -37,6 +38,73 @@ function InicioPage() {
 }
 
 function Inicio({ userData, currentArtist, projects, tasks, loading }) {
+  const { showSuccess, showError, showWarning, showInfo, showProgress, removeNotification } = useNotification();
+
+  // Funciones de demostración de notificaciones
+  const demoNotifications = () => {
+    // Success
+    showSuccess("¡Operación completada exitosamente!", {
+      title: "¡Perfecto!",
+      duration: 5000
+    });
+
+    // Info después de 1 segundo
+    setTimeout(() => {
+      showInfo("Esta es una notificación informativa con botones de acción.", {
+        title: "Información",
+        actions: [
+          {
+            label: "Ver Más",
+            type: "primary",
+            onClick: () => console.log("Ver más clickeado")
+          },
+          {
+            label: "Cancelar",
+            type: "default",
+            onClick: () => console.log("Cancelar clickeado")
+          }
+        ]
+      });
+    }, 1000);
+
+    // Warning después de 2 segundos
+    setTimeout(() => {
+      showWarning("Ten cuidado con esta acción", {
+        title: "⚠️ Advertencia"
+      });
+    }, 2000);
+
+    // Error después de 3 segundos
+    setTimeout(() => {
+      showError("Algo salió mal, pero puedes intentar de nuevo", {
+        title: "Error Crítico",
+        duration: 8000,
+        actions: [
+          {
+            label: "Reintentar",
+            type: "primary",
+            onClick: () => console.log("Reintentar clickeado")
+          }
+        ]
+      });
+    }, 3000);
+
+    // Progress después de 4 segundos
+    setTimeout(() => {
+      const progressId = showProgress("Procesando datos del artista...", {
+        title: "Cargando..."
+      });
+      
+      // Remover progress después de 3 segundos
+      setTimeout(() => {
+        removeNotification(progressId);
+        showSuccess("¡Proceso completado!", {
+          title: "Finalizado"
+        });
+      }, 3000);
+    }, 4000);
+  };
+
   // Calcular estadísticas
   const completedTasks = tasks.filter(task => task.status === 'completed').length;
   const pendingTasks = tasks.filter(task => task.status !== 'completed').length;
@@ -89,6 +157,83 @@ function Inicio({ userData, currentArtist, projects, tasks, loading }) {
             </div>
           </div>
         )}
+
+        {/* Botón de demostración de notificaciones */}
+        <div style={{ marginTop: '20px', textAlign: 'center' }}>
+          <button 
+            onClick={demoNotifications}
+            style={{
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500',
+              boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+              transition: 'transform 0.2s ease',
+              marginRight: '10px'
+            }}
+            onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
+            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+          >
+            🔔 Ver Demostración de Notificaciones
+          </button>
+          
+          <button 
+            onClick={() => {
+              console.log("👤 Información del usuario:");
+              console.log("Email:", userData?.email);
+              console.log("UID:", userData?.uid);
+              console.log("Display Name:", userData?.displayName);
+              alert(`Tu email actual es: ${userData?.email || 'No disponible'}`);
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500',
+              boxShadow: '0 4px 12px rgba(72, 187, 120, 0.3)',
+              transition: 'transform 0.2s ease',
+              marginRight: '10px'
+            }}
+            onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
+            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+          >
+            👤 Ver Mi Email
+          </button>
+
+          <button 
+            onClick={() => {
+              console.log("🔄 Forzando recarga de permisos...");
+              // Limpiar localStorage relacionado con permisos
+              localStorage.clear();
+              // Recargar la página
+              window.location.reload();
+            }}
+            style={{
+              background: 'linear-gradient(135deg, #f56565 0%, #e53e3e 100%)',
+              color: 'white',
+              border: 'none',
+              padding: '12px 24px',
+              borderRadius: '8px',
+              cursor: 'pointer',
+              fontSize: '14px',
+              fontWeight: '500',
+              boxShadow: '0 4px 12px rgba(245, 101, 101, 0.3)',
+              transition: 'transform 0.2s ease'
+            }}
+            onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
+            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+          >
+            🔄 Limpiar Caché y Recargar
+          </button>
+        </div>
 
         {userData && (
           <div className={styles.userInfo}>

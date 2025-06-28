@@ -41,6 +41,7 @@ export const PERMISSIONS = {
   
   // Análisis y métricas
   ANALYTICS_VIEW: 'analytics.view',
+  ANALYTICS_EDIT: 'analytics.edit',
   ANALYTICS_EXPORT: 'analytics.export',
   
   // Comunicados y blog
@@ -86,6 +87,7 @@ export const ACCESS_LEVEL_PERMISSIONS = {
     PERMISSIONS.PROJECTS_EDIT,
     PERMISSIONS.PROJECTS_DELETE,
     PERMISSIONS.ANALYTICS_VIEW,
+    PERMISSIONS.ANALYTICS_EDIT,
     PERMISSIONS.ANALYTICS_EXPORT,
     PERMISSIONS.BLOG_VIEW,
     PERMISSIONS.BLOG_CREATE,
@@ -111,6 +113,7 @@ export const ACCESS_LEVEL_PERMISSIONS = {
     PERMISSIONS.PROJECTS_CREATE,
     PERMISSIONS.PROJECTS_EDIT,
     PERMISSIONS.ANALYTICS_VIEW,
+    PERMISSIONS.ANALYTICS_EDIT,
     PERMISSIONS.BLOG_VIEW,
     PERMISSIONS.BLOG_CREATE,
     PERMISSIONS.BLOG_EDIT,
@@ -172,7 +175,7 @@ export const ROLE_DESCRIPTIONS = {
   [ROLES.DESIGNER]: 'Diseño gráfico y material promocional',
   [ROLES.SOCIAL_MEDIA]: 'Gestión de redes sociales y comunidad',
   [ROLES.BOOKING]: 'Gestión de shows y eventos en vivo',
-  [ROLES.OTHER]: 'Función especializada no listada',
+  [ROLES.OTHER]: 'Rol especializado no listado',
   [ROLES.VIEWER]: 'Solo puede ver la información, sin permisos de edición'
 };
 

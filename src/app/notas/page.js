@@ -23,7 +23,7 @@ export default function NotasPage() {
           <div className={styles.container}>
             <div className={styles.header}>
               <h1>📝 Notas y Documentos</h1>
-              <PermissionGuard permission={PERMISSIONS.NOTES_CREATE}>
+              <PermissionGuard permission={PERMISSIONS.NOTES_CREATE} showDisabled={true}>
                 <button className={styles.addButton}>
                   ➕ Nueva Nota
                 </button>

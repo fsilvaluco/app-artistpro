@@ -79,7 +79,12 @@ export const getUserRole = async (userId, artistId) => {
     
     if (!roleSnapshot.empty) {
       const roleData = roleSnapshot.docs[0].data();
-      return roleData.role;
+      // Devolver tanto el rol del equipo como el nivel de acceso
+      // En la BD, el campo 'role' contiene el nivel de acceso (administrador, editor, lector)
+      return {
+        role: null, // Por ahora no tenemos roles de equipo específicos
+        accessLevel: roleData.role || ACCESS_LEVELS.LECTOR
+      };
     }
     
     // Si no tiene rol específico, verificar si es super admin
@@ -87,14 +92,25 @@ export const getUserRole = async (userId, artistId) => {
     if (userDoc.exists()) {
       const userData = userDoc.data();
       if (userData.isSuperAdmin) {
-        return ACCESS_LEVELS.SUPER_ADMIN;
+        return {
+          role: null,
+          accessLevel: ACCESS_LEVELS.SUPER_ADMIN
+        };
       }
     }
     
-    return ROLES.VIEWER; // Rol por defecto
+    // Rol por defecto - sin rol específico en el equipo y solo lector
+    return {
+      role: null,
+      accessLevel: ACCESS_LEVELS.LECTOR
+    };
   } catch (error) {
     console.error("Error getting user role:", error);
-    return ROLES.VIEWER; // Rol por defecto en caso de error
+    // Rol por defecto en caso de error
+    return {
+      role: null,
+      accessLevel: ACCESS_LEVELS.LECTOR
+    };
   }
 };
 
@@ -178,8 +194,8 @@ export const removeUserRole = async (roleId) => {
 // Verificar si un usuario tiene un permiso específico para un artista
 export const checkUserPermission = async (userId, artistId, permission) => {
   try {
-    const userRole = await getUserRole(userId, artistId);
-    return hasPermission(userRole, permission);
+    const userData = await getUserRole(userId, artistId);
+    return hasPermission(userData.accessLevel, permission);
   } catch (error) {
     console.error("Error checking user permission:", error);
     return false;
@@ -203,14 +219,15 @@ export const getPotentialAdmins = async (artistId) => {
       const requestData = requestDoc.data();
       
       // Verificar si ya tiene un rol administrativo
-      const currentRole = await getUserRole(requestData.userId, artistId);
+      const userData = await getUserRole(requestData.userId, artistId);
       
-      if (!isAdminRole(currentRole)) {
+      if (!isAdminRole(userData.accessLevel)) {
         users.push({
           userId: requestData.userId,
           email: requestData.userEmail,
           name: requestData.userName,
-          currentRole
+          currentRole: userData.role,
+          currentAccessLevel: userData.accessLevel
         });
       }
     }

@@ -41,7 +41,7 @@ export default function SolicitudAccesoFlujo() {
     isCompleted: false
   });
 
-  const { user, isAuthenticated } = useSession();
+  const { user, isAuthenticated, loading } = useSession();
   const { showSuccess, showError, showProgress, removeNotification } = useNotification();
   const router = useRouter();
 
@@ -155,6 +155,18 @@ export default function SolicitudAccesoFlujo() {
   const closeFlow = () => {
     router.push('/');
   };
+
+  // Si está cargando, mostrar loading
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>
+          <h2>Cargando...</h2>
+          <p>Verificando autenticación...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated()) {
     return (

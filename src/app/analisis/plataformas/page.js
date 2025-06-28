@@ -23,7 +23,7 @@ export default function AnalisisPlataformasPage() {
           <div className={styles.container}>
             <div className={styles.header}>
               <h1>🎵 Análisis de Plataformas</h1>
-              <PermissionGuard permission={PERMISSIONS.ANALYTICS_EXPORT}>
+              <PermissionGuard permission={PERMISSIONS.ANALYTICS_EXPORT} showDisabled={true}>
                 <button className={styles.addButton}>
                   📥 Exportar Datos
                 </button>

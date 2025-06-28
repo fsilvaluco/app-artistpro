@@ -7,10 +7,12 @@ import { auth } from "./firebase";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "../contexts/SessionContext";
+import { useTheme } from "../contexts/ThemeContext";
 
 export default function Home() {
   const router = useRouter();
   const { user, loading } = useSession();
+  const { theme, setTheme } = useTheme();
 
   // Redirigir si ya está autenticado
   useEffect(() => {

@@ -1,21 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession } from "../../contexts/SessionContext";
-import { usePermissions } from "../../contexts/PermissionsContext";
-import { useNotification } from "../../contexts/NotificationContext";
+import { useSession } from "../../../contexts/SessionContext";
+import { usePermissions } from "../../../contexts/PermissionsContext";
+import { useNotification } from "../../../contexts/NotificationContext";
 import { useRouter } from "next/navigation";
-import Sidebar from "../../components/Sidebar";
-import PermissionGuard from "../../components/PermissionGuard";
+import Sidebar from "../../../components/Sidebar";
+import PermissionGuard from "../../../components/PermissionGuard";
 import { 
   getArtistRequests,
   approveArtistRequest,
   rejectArtistRequest,
   REQUEST_STATUS
-} from "../../utils/artistRequests";
-import { updateArtistRequestWithRole } from "../../utils/roleManagement";
-import { ROLES, ROLE_LABELS, ROLE_DESCRIPTIONS, ROLE_COLORS, getAssignableRoles } from "../../utils/roles";
-import { PERMISSIONS } from "../../utils/roles";
+} from "../../../utils/artistRequests";
+import { updateArtistRequestWithRole } from "../../../utils/roleManagement";
+import { ROLES, ROLE_LABELS, ROLE_DESCRIPTIONS, ROLE_COLORS, getAssignableRoles } from "../../../utils/roles";
+import { PERMISSIONS } from "../../../utils/roles";
 import styles from "./page.module.css";
 
 export default function AdminSolicitudes() {

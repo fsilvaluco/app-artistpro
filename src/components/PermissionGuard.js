@@ -9,6 +9,8 @@ export default function PermissionGuard({
   adminOnly = false,
   superAdminOnly = false,
   fallback = null,
+  showDisabled = false,
+  disabledStyle = {},
   children 
 }) {
   const { 
@@ -22,7 +24,7 @@ export default function PermissionGuard({
     userAccessLevel
   } = usePermissions();
 
-  console.log(`🛡️ PermissionGuard - AccessLevel: ${userAccessLevel}, Loading: ${loading}, RoleLoaded: ${roleLoaded}, IsSuperAdmin: ${isSuperAdmin()}`);
+  console.log(`🛡️ PermissionGuard - Email: ${userAccessLevel?.email}, AccessLevel: ${userAccessLevel}, Loading: ${loading}, RoleLoaded: ${roleLoaded}, IsSuperAdmin: ${isSuperAdmin()}, IsAdmin: ${isAdmin()}`);
 
   // Mostrar loading mientras se cargan los permisos
   if (loading || !roleLoaded) {
@@ -46,8 +48,40 @@ export default function PermissionGuard({
     return fallback || <div>Acceso denegado: Se requieren permisos de administrador</div>;
   }
 
+  // Función para aplicar estilos de deshabilitado
+  const applyDisabledStyles = (element) => {
+    if (!element || !element.props) return element;
+    
+    const defaultDisabledStyle = {
+      opacity: 0.5,
+      cursor: 'not-allowed',
+      pointerEvents: 'none',
+      background: '#6b7280',
+      color: '#9ca3af',
+      ...disabledStyle
+    };
+
+    return {
+      ...element,
+      props: {
+        ...element.props,
+        disabled: true,
+        style: {
+          ...element.props.style,
+          ...defaultDisabledStyle
+        },
+        onClick: undefined,
+        onMouseOver: undefined,
+        onMouseOut: undefined
+      }
+    };
+  };
+
   // Verificar permiso único
   if (permission && !checkPermission(permission)) {
+    if (showDisabled) {
+      return applyDisabledStyles(children);
+    }
     return fallback || <div>Acceso denegado: Permiso insuficiente</div>;
   }
 
@@ -58,6 +92,9 @@ export default function PermissionGuard({
       : checkAnyPermission(permissions);
     
     if (!hasAccess) {
+      if (showDisabled) {
+        return applyDisabledStyles(children);
+      }
       return fallback || <div>Acceso denegado: Permisos insuficientes</div>;
     }
   }

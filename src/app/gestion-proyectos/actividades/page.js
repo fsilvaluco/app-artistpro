@@ -239,7 +239,7 @@ export default function ActivitiesPage() {
         <div className={styles.container}>
       <div className={styles.header}>
         <h1>Gestión de Actividades</h1>
-        <PermissionGuard permission={PERMISSIONS.PROJECTS_CREATE}>
+        <PermissionGuard permission={PERMISSIONS.PROJECTS_CREATE} showDisabled={true}>
           <button
             onClick={() => setShowModal(true)}
             className={styles.addButton}
@@ -325,20 +325,24 @@ export default function ActivitiesPage() {
                 <div className={styles.taskHeader}>
                   <h3 className={styles.taskTitle}>{task.title}</h3>
                   <div className={styles.taskActions}>
-                    <button
-                      onClick={() => handleEdit(task)}
-                      className={styles.editButton}
-                      title="Editar tarea"
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={() => handleDelete(task.id)}
-                      className={styles.deleteButton}
-                      title="Eliminar tarea"
-                    >
-                      🗑️
-                    </button>
+                    <PermissionGuard permission={PERMISSIONS.PROJECTS_EDIT} showDisabled={true}>
+                      <button
+                        onClick={() => handleEdit(task)}
+                        className={styles.editButton}
+                        title="Editar tarea"
+                      >
+                        ✏️
+                      </button>
+                    </PermissionGuard>
+                    <PermissionGuard permission={PERMISSIONS.PROJECTS_DELETE} showDisabled={true}>
+                      <button
+                        onClick={() => handleDelete(task.id)}
+                        className={styles.deleteButton}
+                        title="Eliminar tarea"
+                      >
+                        🗑️
+                      </button>
+                    </PermissionGuard>
                   </div>
                 </div>
 

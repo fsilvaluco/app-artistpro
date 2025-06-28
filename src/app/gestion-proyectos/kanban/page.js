@@ -7,7 +7,10 @@ import { useUsers } from '../../../contexts/UserContext';
 import CategoryBadge from '../../../components/CategoryBadge';
 import Sidebar from '../../../components/Sidebar';
 import ProtectedRoute from '../../../components/ProtectedRoute';
+import PermissionGuard from '../../../components/PermissionGuard';
+import { usePermissions } from '../../../contexts/PermissionsContext';
 import { CATEGORIES_ARRAY } from '../../../utils/categories';
+import { PERMISSIONS } from '../../../utils/roles';
 import styles from './page.module.css';
 
 const TASK_STATUSES = {
@@ -25,6 +28,7 @@ const TASK_PRIORITIES = {
 
 export default function KanbanPage() {
   const { user } = useSession();
+  const { checkPermission } = usePermissions();
   const { 
     tasks, 
     projects, 
@@ -165,17 +169,33 @@ export default function KanbanPage() {
   };
 
   const handleDragStart = (e, task) => {
+    // No permitir drag si no tiene permisos de edición
+    if (!checkPermission(PERMISSIONS.PROJECTS_EDIT)) {
+      e.preventDefault();
+      return false;
+    }
     setDraggedTask(task);
     e.dataTransfer.effectAllowed = 'move';
   };
 
   const handleDragOver = (e) => {
+    // Solo permitir drop si tiene permisos de edición
+    if (!checkPermission(PERMISSIONS.PROJECTS_EDIT)) {
+      return;
+    }
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   };
 
   const handleDrop = (e, newStatus) => {
     e.preventDefault();
+    
+    // Verificar si el usuario tiene permiso para editar
+    if (!checkPermission(PERMISSIONS.PROJECTS_EDIT)) {
+      setDraggedTask(null);
+      return;
+    }
+    
     if (draggedTask && draggedTask.status !== newStatus) {
       handleStatusChange(draggedTask.id, newStatus);
     }
@@ -201,12 +221,14 @@ export default function KanbanPage() {
         <div className={styles.container}>
       <div className={styles.header}>
         <h1>Vista Kanban</h1>
-        <button
-          onClick={() => setShowModal(true)}
-          className={styles.addButton}
-        >
-          ➕ Nueva Tarea
-        </button>
+        <PermissionGuard permission={PERMISSIONS.PROJECTS_CREATE} showDisabled={true}>
+          <button
+            onClick={() => setShowModal(true)}
+            className={styles.addButton}
+          >
+            ➕ Nueva Tarea
+          </button>
+        </PermissionGuard>
       </div>
 
       {/* Filtros */}
@@ -267,23 +289,28 @@ export default function KanbanPage() {
                 {statusTasks.map(task => {
                   const project = task.projectId ? projects.find(p => p.id === task.projectId) : null;
                   const priority = TASK_PRIORITIES[task.priority] || TASK_PRIORITIES.MEDIUM;
+                  const canEdit = checkPermission(PERMISSIONS.PROJECTS_EDIT);
+                  const canDelete = checkPermission(PERMISSIONS.PROJECTS_DELETE);
 
                   return (
                     <div
                       key={task.id}
-                      className={styles.taskCard}
-                      draggable
-                      onDragStart={(e) => handleDragStart(e, task)}
+                      className={`${styles.taskCard} ${!canEdit ? styles.readOnly : ''}`}
+                      draggable={canEdit}
+                      onDragStart={canEdit ? (e) => handleDragStart(e, task) : undefined}
+                      style={{ cursor: canEdit ? 'grab' : 'default' }}
                     >
                       <div className={styles.taskHeader}>
                         <h4 className={styles.taskTitle}>{task.title}</h4>
-                        <button
-                          onClick={() => handleDelete(task.id)}
-                          className={styles.deleteButton}
-                          title="Eliminar tarea"
-                        >
-                          ✕
-                        </button>
+                        <PermissionGuard permission={PERMISSIONS.PROJECTS_DELETE} showDisabled={true}>
+                          <button
+                            onClick={() => handleDelete(task.id)}
+                            className={styles.deleteButton}
+                            title="Eliminar tarea"
+                          >
+                            ✕
+                          </button>
+                        </PermissionGuard>
                       </div>
 
                       {task.description && (

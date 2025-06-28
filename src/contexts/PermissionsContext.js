@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { useSession } from "./SessionContext";
 import { useArtist } from "./ArtistContext";
 import { getUserRole } from "../utils/roleManagement";
-import { hasPermission, hasAllPermissions, hasAnyPermission, isAdminAccessLevel, ACCESS_LEVELS } from "../utils/roles";
+import { hasPermission, hasAllPermissions, hasAnyPermission, isAdminAccessLevel, ACCESS_LEVELS, ACCESS_LEVEL_PERMISSIONS } from "../utils/roles";
 import { isInitialAdmin, grantSuperAdminRole } from "../utils/artistRequests";
 
 // Crear el contexto
@@ -21,7 +21,7 @@ export const usePermissions = () => {
 
 // Provider del contexto
 export function PermissionsProvider({ children }) {
-  const [userRole, setUserRole] = useState(null); // Función en el equipo (manager, marketing, etc.)
+  const [userRole, setUserRole] = useState(null); // Rol en el equipo (manager, marketing, etc.)
   const [userAccessLevel, setUserAccessLevel] = useState(ACCESS_LEVELS.LECTOR); // Nivel de permisos
   const [loading, setLoading] = useState(true);
   const [roleLoaded, setRoleLoaded] = useState(false);
@@ -45,6 +45,8 @@ export function PermissionsProvider({ children }) {
       // Verificar si es administrador inicial PRIMERO
       if (isInitialAdmin(user.email)) {
         console.log("🔑 Usuario es administrador inicial, asignando Super Admin:", user.email);
+        console.log("📧 Email verificado:", user.email);
+        console.log("🔍 isInitialAdmin(user.email):", isInitialAdmin(user.email));
         setUserRole(null); // Los super admins no tienen rol específico
         setUserAccessLevel(ACCESS_LEVELS.SUPER_ADMIN);
         
@@ -52,13 +54,17 @@ export function PermissionsProvider({ children }) {
           await grantSuperAdminRole(user.uid, user.email, user.displayName || 'Admin');
           console.log("✅ Super Admin asignado correctamente");
         } catch (error) {
-          console.error("Error asignando Super Admin:", error);
+          console.error("❌ Error asignando Super Admin:", error);
           // Continuar con el rol ya asignado
         }
         
         setRoleLoaded(true);
         setLoading(false);
+        console.log("🦾 Super Admin configurado exitosamente, ACCESS_LEVEL:", ACCESS_LEVELS.SUPER_ADMIN);
         return; // Salir temprano para super admins
+      } else {
+        console.log("❌ Usuario NO es administrador inicial:", user.email);
+        console.log("🔍 isInitialAdmin result:", isInitialAdmin(user.email));
       }
       
       // Si hay artista seleccionado, obtener rol y nivel de acceso específicos para usuarios normales
@@ -68,7 +74,7 @@ export function PermissionsProvider({ children }) {
         const userData = await getUserRole(user.uid, selectedArtist.id);
         console.log("👤 Datos obtenidos:", userData);
         
-        // Separar rol (función) y accessLevel (permisos)
+        // Separar rol y accessLevel (permisos)
         setUserRole(userData?.role || null);
         setUserAccessLevel(userData?.accessLevel || ACCESS_LEVELS.LECTOR);
       } else {
@@ -103,7 +109,14 @@ export function PermissionsProvider({ children }) {
   // Función para verificar un permiso específico
   const checkPermission = (permission) => {
     const result = hasPermission(userAccessLevel, permission);
-    console.log(`🔍 checkPermission - AccessLevel: ${userAccessLevel}, Permission: ${permission}, Result: ${result}`);
+    console.log(`🔍 checkPermission - User: ${user?.email}, AccessLevel: ${userAccessLevel}, Permission: ${permission}, Result: ${result}`);
+    
+    // Debug adicional para administradores
+    if (userAccessLevel === ACCESS_LEVELS.ADMINISTRADOR && !result) {
+      console.log(`⚠️ PROBLEMA: Administrador sin permiso ${permission}`);
+      console.log(`📋 Permisos de administrador:`, ACCESS_LEVEL_PERMISSIONS[ACCESS_LEVELS.ADMINISTRADOR]);
+    }
+    
     return result;
   };
 

@@ -26,12 +26,26 @@ export default function ArtistRequestPage() {
 
   // Función para ir al flujo guiado
   const goToGuidedFlow = () => {
-    router.push('/solicitud-acceso-flujo');
+    console.log("🚀 Iniciando navegación al flujo guiado...");
+    console.log("Router:", router);
+    try {
+      router.push('/solicitud-acceso-flujo');
+      console.log("✅ Navegación iniciada correctamente");
+    } catch (error) {
+      console.error("❌ Error en navegación:", error);
+    }
   };
 
   // Redirigir si ya tiene acceso
   useEffect(() => {
+    console.log("🔐 Estado de acceso:", {
+      isAuthenticated: isAuthenticated(),
+      hasAccess,
+      userData: userData?.uid ? "Usuario autenticado" : "No autenticado"
+    });
+    
     if (isAuthenticated() && hasAccess) {
+      console.log("↩️ Redirigiendo a inicio (usuario ya tiene acceso)");
       router.push('/inicio');
     }
   }, [isAuthenticated, hasAccess, router]);
@@ -143,6 +157,7 @@ export default function ArtistRequestPage() {
   };
 
   if (loading) {
+    console.log("⏳ Página en estado de loading...");
     return (
       <div className={styles.loading}>
         <div className={styles.spinner}></div>
@@ -153,6 +168,7 @@ export default function ArtistRequestPage() {
 
   // Redirigir si no está autenticado
   if (!isAuthenticated()) {
+    console.log("❌ Usuario no autenticado, redirigiendo a login");
     router.push('/');
     return null;
   }
@@ -172,7 +188,10 @@ export default function ArtistRequestPage() {
               <p>Te recomendamos usar nuestro asistente paso a paso para solicitar acceso de manera más sencilla.</p>
             </div>
             <button 
-              onClick={goToGuidedFlow}
+              onClick={(e) => {
+                console.log("🖱️ Botón clickeado", e);
+                goToGuidedFlow();
+              }}
               className={styles.guidedFlowButton}
             >
               Iniciar Proceso Guiado

@@ -23,7 +23,7 @@ export default function BlogPage() {
           <div className={styles.container}>
             <div className={styles.header}>
               <h1>📝 Blog & Comunicados</h1>
-              <PermissionGuard permission={PERMISSIONS.BLOG_CREATE}>
+              <PermissionGuard permission={PERMISSIONS.BLOG_CREATE} showDisabled={true}>
                 <button className={styles.addButton}>
                   ➕ Nueva Entrada
                 </button>

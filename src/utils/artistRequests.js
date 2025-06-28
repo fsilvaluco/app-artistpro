@@ -112,6 +112,8 @@ const INITIAL_ADMINS = [
   'francisco@agenciakatarsis.cl',
   'info@agenciakatarsis.cl',
   // Agregar más emails de administradores iniciales aquí
+  'admin@test.com', // Email temporal para testing
+  'test@example.com', // Email temporal para testing
 ];
 
 // Verificar si un usuario es administrador inicial

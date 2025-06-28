@@ -576,9 +576,9 @@
 
 .membersList {
   background: var(--card-background);
-  border: 1px solid var(--border-color);
   border-radius: 12px;
-  overflow: hidden;
+  overflow: visible; /* Cambiar a visible para permitir que el menú se muestre */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Agregar sombra sutil en lugar de borde */
 }
 
 .membersHeader {
@@ -587,7 +587,6 @@
   gap: 1rem;
   padding: 1rem 1.5rem;
   background: var(--surface-secondary);
-  border-bottom: 1px solid var(--border-color);
   font-weight: 500;
   color: var(--text-secondary);
   font-size: 0.9rem;
@@ -598,12 +597,23 @@
   grid-template-columns: 2fr 1fr 1fr 100px;
   gap: 1rem;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
   align-items: center;
+  transition: background-color 0.2s ease;
+  border: none !important; /* Forzar que no haya bordes */
+  border-bottom: none !important; /* Específicamente quitar border-bottom */
 }
 
-.memberItem:last-child {
-  border-bottom: none;
+.memberItem:hover {
+  background-color: var(--surface-secondary);
+}
+
+/* Asegurar que ningún elemento dentro tenga bordes no deseados */
+.memberItem * {
+  border: none !important;
+}
+
+.memberItem div {
+  border-bottom: none !important;
 }
 
 .memberInfo {
@@ -663,16 +673,23 @@
 .menuButton {
   background: none;
   border: none;
-  padding: 0.5rem;
+  padding: 8px;
+  border-radius: 6px;
   cursor: pointer;
   color: #6b7280;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .menuButton:hover {
   background: #f3f4f6;
-  color: #1f2937;
+  color: #374151;
+}
+
+.menuButton:active {
+  background: #e5e7eb;
 }
 
 /* Menú desplegable */
@@ -681,46 +698,284 @@
   display: inline-block;
 }
 
+.menuButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: #f9fafb;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 0.2s ease;
+  outline: none;
+  position: relative;
+}
+
+.menuButton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: transparent;
+  transition: background 0.2s ease;
+}
+
+.menuButton:hover {
+  background: #f3f4f6;
+  color: #374151;
+  transform: translateY(-1px);
+}
+
+.menuButton:hover::before {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.menuButton:active {
+  background: #e5e7eb;
+  transform: translateY(0);
+}
+
+.menuButtonActive {
+  background: #f3f4f6 !important;
+  color: #3b82f6 !important;
+  transform: translateY(-1px);
+}
+
+.menuButtonActive::before {
+  background: rgba(59, 130, 246, 0.1) !important;
+}
+
 .dropdownMenu {
   position: absolute;
-  top: 100%;
+  top: calc(100% + 4px);
   right: 0;
   background: white;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  min-width: 120px;
-  overflow: hidden;
+  border-radius: 12px;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  z-index: 50000; /* Aumentar significativamente el z-index */
+  min-width: 200px;
+  overflow: visible; /* Cambiar a visible */
+  animation: fadeInScale 0.15s ease-out;
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(59, 130, 246, 0.1); /* Borde sutil para mejor visibilidad */
+}
+
+/* Animación mejorada */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Ajuste automático cuando está cerca del borde inferior */
+.dropdownMenuUp {
+  top: auto !important;
+  bottom: calc(100% + 4px) !important;
+  animation: fadeInScaleUp 0.15s ease-out;
+}
+
+@keyframes fadeInScaleUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .menuItem {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   width: 100%;
-  padding: 12px 16px;
+  padding: 14px 16px;
   border: none;
   background: none;
   text-align: left;
   cursor: pointer;
-  color: #1f2937;
+  color: #374151;
   font-size: 14px;
-  transition: background-color 0.2s;
-}
-
-.menuItem:hover {
-  background: #f3f4f6;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  line-height: 1.4;
+  border-bottom: 1px solid #f3f4f6;
 }
 
 .menuItem:last-child {
-  color: #ef4444;
+  border-bottom: none;
+  color: #dc2626;
+}
+
+.menuItem:hover {
+  background: #f8f9fa;
+  padding-left: 20px;
 }
 
 .menuItem:last-child:hover {
   background: #fef2f2;
 }
 
-.menuIcon {
-  font-size: 16px;
+.menuItem svg {
+  opacity: 0.7;
+  transition: opacity 0.15s ease;
+  flex-shrink: 0;
+}
+
+.menuItem:hover svg {
+  opacity: 1;
+}
+
+/* Estilos para solicitudes pendientes */
+.badge {
+  background: #ef4444;
+  color: white;
+  border-radius: 12px;
+  padding: 2px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.requestsList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.requestItem {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  transition: all 0.2s ease;
+}
+
+.requestItem:hover {
+  border-color: #d1d5db;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.requestInfo {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex: 1;
+}
+
+.requestMessage {
+  font-style: italic;
+  color: #6b7280;
+  margin: 4px 0;
+  padding: 8px;
+  background: #f9fafb;
+  border-radius: 6px;
+  border-left: 3px solid #d1d5db;
+}
+
+.requestDate {
+  font-size: 12px;
+  color: #9ca3af;
+  margin: 4px 0 0 0;
+}
+
+.requestActions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-end;
+  min-width: 200px;
+}
+
+.roleSelector {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.roleSelector label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.roleSelect {
+  padding: 6px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  background: white;
+  color: #374151;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 8px;
+}
+
+.approveButton {
+  padding: 8px 16px;
+  background: #10b981;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.approveButton:hover {
+  background: #059669;
+}
+
+.rejectButton {
+  padding: 8px 16px;
+  background: #ef4444;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.rejectButton:hover {
+  background: #dc2626;
+}
+
+@media (max-width: 768px) {
+  .requestItem {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .requestActions {
+    align-items: stretch;
+    min-width: auto;
+  }
+  
+  .actionButtons {
+    width: 100%;
+  }
+  
+  .approveButton,
+  .rejectButton {
+    flex: 1;
+  }
 }

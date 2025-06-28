@@ -172,24 +172,26 @@ function Proyectos({ userData }) {
             Gestiona tus proyectos musicales y objetivos grandes
           </p>
         </div>
-        <button
-          onClick={() => setShowCreateForm(true)}
-          style={{
-            padding: '12px 24px',
-            background: 'var(--primary, #007bff)',
-            color: 'white',
-            border: 'none',
-            borderRadius: 8,
-            fontSize: 16,
-            fontWeight: 600,
-            cursor: 'pointer',
-            transition: 'background-color 0.2s ease'
-          }}
-          onMouseOver={(e) => e.target.style.background = '#0056b3'}
-          onMouseOut={(e) => e.target.style.background = 'var(--primary, #007bff)'}
-        >
-          + Nuevo Proyecto
-        </button>
+        <PermissionGuard permission={PERMISSIONS.PROJECTS_CREATE} showDisabled={true}>
+          <button
+            onClick={() => setShowCreateForm(true)}
+            style={{
+              padding: '12px 24px',
+              background: 'var(--primary, #007bff)',
+              color: 'white',
+              border: 'none',
+              borderRadius: 8,
+              fontSize: 16,
+              fontWeight: 600,
+              cursor: 'pointer',
+              transition: 'background-color 0.2s ease'
+            }}
+            onMouseOver={(e) => e.target.style.background = '#0056b3'}
+            onMouseOut={(e) => e.target.style.background = 'var(--primary, #007bff)'}
+          >
+            + Nuevo Proyecto
+          </button>
+        </PermissionGuard>
       </div>
 
       {/* Formulario de creación */}
@@ -391,39 +393,43 @@ function Proyectos({ userData }) {
                     {project.title}
                   </h3>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setEditingProject(project);
-                      }}
-                      style={{
-                        padding: '4px 8px',
-                        background: 'transparent',
-                        border: '1px solid var(--border)',
-                        borderRadius: 4,
-                        cursor: 'pointer',
-                        fontSize: 12
-                      }}
-                    >
-                      ✏️
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDeleteProject(project.id);
-                      }}
-                      style={{
-                        padding: '4px 8px',
-                        background: 'transparent',
-                        border: '1px solid var(--danger, #dc3545)',
-                        borderRadius: 4,
-                        cursor: 'pointer',
-                        fontSize: 12,
-                        color: 'var(--danger, #dc3545)'
-                      }}
-                    >
-                      🗑️
-                    </button>
+                    <PermissionGuard permission={PERMISSIONS.PROJECTS_EDIT} showDisabled={true}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingProject(project);
+                        }}
+                        style={{
+                          padding: '4px 8px',
+                          background: 'transparent',
+                          border: '1px solid var(--border)',
+                          borderRadius: 4,
+                          cursor: 'pointer',
+                          fontSize: 12
+                        }}
+                      >
+                        ✏️
+                      </button>
+                    </PermissionGuard>
+                    <PermissionGuard permission={PERMISSIONS.PROJECTS_DELETE} showDisabled={true}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteProject(project.id);
+                        }}
+                        style={{
+                          padding: '4px 8px',
+                          background: 'transparent',
+                          border: '1px solid var(--danger, #dc3545)',
+                          borderRadius: 4,
+                          cursor: 'pointer',
+                          fontSize: 12,
+                          color: 'var(--danger, #dc3545)'
+                        }}
+                      >
+                        🗑️
+                      </button>
+                    </PermissionGuard>
                   </div>
                 </div>
 

@@ -23,7 +23,7 @@ export default function AnalisisPrensaPage() {
           <div className={styles.container}>
             <div className={styles.header}>
               <h1>📰 Análisis de Prensa</h1>
-              <PermissionGuard permission={PERMISSIONS.ANALYTICS_EXPORT}>
+              <PermissionGuard permission={PERMISSIONS.ANALYTICS_EXPORT} showDisabled={true}>
                 <button className={styles.addButton}>
                   📥 Exportar Datos
                 </button>

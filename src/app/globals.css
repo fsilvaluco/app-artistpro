@@ -38,6 +38,11 @@
   --error: #ef4444;
   --info: #3b82f6;
   
+  /* Colores para estados deshabilitados */
+  --disabled-bg: #f3f4f6;
+  --disabled-text: #9ca3af;
+  --disabled-border: #e5e7eb;
+  
   /* Sombras */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
@@ -92,6 +97,11 @@
   --warning: #f59e0b;
   --error: #ef4444;
   --info: #3b82f6;
+  
+  /* Colores para estados deshabilitados */
+  --disabled-bg: #374151;
+  --disabled-text: #9ca3af;
+  --disabled-border: #475569;
   
   /* Sombras */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
@@ -171,8 +181,31 @@ a {
   text-decoration: none;
 }
 
+/* Estilos globales para botones deshabilitados */
+button:disabled, 
+.button-disabled {
+  background: var(--disabled-bg) !important;
+  color: var(--disabled-text) !important;
+  border-color: var(--disabled-border) !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+  pointer-events: none;
+  transition: none !important;
+}
+
+button:disabled:hover,
+.button-disabled:hover {
+  background: var(--disabled-bg) !important;
+  color: var(--disabled-text) !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 @media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+  :root {
+    /* Ajustar colores de deshabilitado para tema oscuro */
+    --disabled-bg: #374151;
+    --disabled-text: #6b7280;
+    --disabled-border: #4b5563;
   }
 }

@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useSession } from "../../../contexts/SessionContext";
 import { useArtist } from "../../../contexts/ArtistContext";
 import { useNotification } from "../../../contexts/NotificationContext";
+import { usePermissions } from "../../../contexts/PermissionsContext";
 import Sidebar from "../../../components/Sidebar";
 import ProtectedRoute from "../../../components/ProtectedRoute";
 import PermissionGuard from "../../../components/PermissionGuard";
@@ -45,6 +46,7 @@ export default function AnalisisEventosPage() {
   const { getUserData } = useSession();
   const { getCurrentArtist, getCurrentArtistId } = useArtist();
   const { showSuccess, showError, showProgress, removeNotification } = useNotification();
+  const { checkPermission } = usePermissions();
   
   const userData = getUserData();
   const currentArtist = getCurrentArtist();
@@ -98,6 +100,11 @@ export default function AnalisisEventosPage() {
 
   // Abrir modal para nuevo evento
   const openNewEventModal = () => {
+    if (!checkPermission(PERMISSIONS.ANALYTICS_EDIT)) {
+      showError('No tienes permisos para crear eventos');
+      return;
+    }
+    
     setEditingEvent(null);
     setFormData({
       name: '',
@@ -116,6 +123,11 @@ export default function AnalisisEventosPage() {
 
   // Abrir modal para editar evento
   const openEditEventModal = (event) => {
+    if (!checkPermission(PERMISSIONS.ANALYTICS_EDIT)) {
+      showError('No tienes permisos para editar eventos');
+      return;
+    }
+    
     setEditingEvent(event);
     setFormData({
       name: event.name || '',
@@ -158,6 +170,11 @@ export default function AnalisisEventosPage() {
 
   // Guardar evento
   const saveEvent = async () => {
+    if (!checkPermission(PERMISSIONS.ANALYTICS_EDIT)) {
+      showError('No tienes permisos para guardar eventos');
+      return;
+    }
+    
     if (!formData.name || !formData.date || !formData.lugar) {
       showError('Nombre, fecha y lugar son obligatorios');
       return;
@@ -203,6 +220,11 @@ export default function AnalisisEventosPage() {
 
   // Eliminar evento
   const handleDeleteEvent = async (event) => {
+    if (!checkPermission(PERMISSIONS.ANALYTICS_EDIT)) {
+      showError('No tienes permisos para eliminar eventos');
+      return;
+    }
+    
     if (!confirm(`¿Estás seguro de que quieres eliminar el evento "${event.name}"?`)) {
       return;
     }
@@ -268,7 +290,7 @@ export default function AnalisisEventosPage() {
                   </button>
                   
                   {artistId && (
-                    <PermissionGuard permission={PERMISSIONS.ANALYTICS_EDIT}>
+                    <PermissionGuard permission={PERMISSIONS.ANALYTICS_EDIT} showDisabled={true}>
                       <button 
                         className={styles.addButton}
                         onClick={openNewEventModal}
@@ -436,9 +458,11 @@ export default function AnalisisEventosPage() {
                   <div className={styles.emptyIcon}>🎪</div>
                   <h2>No hay eventos registrados</h2>
                   <p>Comienza creando tu primer evento o show.</p>
-                  <button onClick={openNewEventModal} className={styles.addButton}>
-                    Crear primer evento
-                  </button>
+                  <PermissionGuard permission={PERMISSIONS.ANALYTICS_EDIT} showDisabled={true}>
+                    <button onClick={openNewEventModal} className={styles.addButton}>
+                      Crear primer evento
+                    </button>
+                  </PermissionGuard>
                 </div>
               ) : (
                 <div className={styles.eventsList}>
@@ -489,20 +513,24 @@ export default function AnalisisEventosPage() {
                         </div>
                         
                         <div className={styles.eventActions}>
-                          <button 
-                            className={styles.editButton}
-                            onClick={() => openEditEventModal(event)}
-                            title="Editar evento"
-                          >
-                            ✏️
-                          </button>
-                          <button 
-                            className={styles.deleteButton}
-                            onClick={() => handleDeleteEvent(event)}
-                            title="Eliminar evento"
-                          >
-                            🗑️
-                          </button>
+                          <PermissionGuard permission={PERMISSIONS.ANALYTICS_EDIT} showDisabled={true}>
+                            <button 
+                              className={styles.editButton}
+                              onClick={() => openEditEventModal(event)}
+                              title="Editar evento"
+                            >
+                              ✏️
+                            </button>
+                          </PermissionGuard>
+                          <PermissionGuard permission={PERMISSIONS.ANALYTICS_EDIT} showDisabled={true}>
+                            <button 
+                              className={styles.deleteButton}
+                              onClick={() => handleDeleteEvent(event)}
+                              title="Eliminar evento"
+                            >
+                              🗑️
+                            </button>
+                          </PermissionGuard>
                         </div>
                       </div>
                     ))}
@@ -638,13 +666,15 @@ export default function AnalisisEventosPage() {
                       <button onClick={closeModal} className={styles.cancelButton}>
                         Cancelar
                       </button>
-                      <button 
-                        onClick={saveEvent} 
-                        className={styles.saveButton}
-                        disabled={loading}
-                      >
-                        {loading ? 'Guardando...' : (editingEvent ? 'Actualizar' : 'Crear Evento')}
-                      </button>
+                      <PermissionGuard permission={PERMISSIONS.ANALYTICS_EDIT} showDisabled={true}>
+                        <button 
+                          onClick={saveEvent} 
+                          className={styles.saveButton}
+                          disabled={loading}
+                        >
+                          {loading ? 'Guardando...' : (editingEvent ? 'Actualizar' : 'Crear Evento')}
+                        </button>
+                      </PermissionGuard>
                     </div>
                   </div>
                 </div>

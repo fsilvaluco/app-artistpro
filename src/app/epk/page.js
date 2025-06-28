@@ -23,7 +23,7 @@ export default function EPKPage() {
           <div className={styles.container}>
             <div className={styles.header}>
               <h1>📋 Electronic Press Kit (EPK)</h1>
-              <PermissionGuard permission={PERMISSIONS.EPK_EDIT}>
+              <PermissionGuard permission={PERMISSIONS.EPK_EDIT} showDisabled={true}>
                 <button className={styles.addButton}>
                   ✏️ Editar EPK
                 </button>
