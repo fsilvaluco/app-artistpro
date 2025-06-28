@@ -290,6 +290,7 @@ export const getTeamMembersFromAccessContext = async (artistId, currentUserId) =
     
     // Primero, obtener todos los usuarios que tienen acceso a artistas
     const usersWithAccess = [];
+    const seenUserIds = new Set(); // Para evitar duplicados
     
     // Obtener todos los documentos de la colección users
     const usersSnapshot = await getDocs(collection(db, "users"));
@@ -299,6 +300,12 @@ export const getTeamMembersFromAccessContext = async (artistId, currentUserId) =
     for (const userDoc of usersSnapshot.docs) {
       const userData = userDoc.data();
       const userId = userDoc.id;
+      
+      // Saltar si ya procesamos este usuario
+      if (seenUserIds.has(userId)) {
+        console.log("🚫 Saltando usuario duplicado:", userId);
+        continue;
+      }
       
       try {
         // Usar la misma función que usa AccessContext
@@ -339,6 +346,9 @@ export const getTeamMembersFromAccessContext = async (artistId, currentUserId) =
             accessLevel = "lector";
           }
           
+          // Marcar usuario como procesado
+          seenUserIds.add(userId);
+          
           usersWithAccess.push({
             id: userId,
             userId: userId,
@@ -358,7 +368,7 @@ export const getTeamMembersFromAccessContext = async (artistId, currentUserId) =
       }
     }
     
-    console.log(`👥 Total de usuarios con acceso al artista ${artistId}: ${usersWithAccess.length}`);
+    console.log(`👥 Total de usuarios únicos con acceso al artista ${artistId}: ${usersWithAccess.length}`);
     return usersWithAccess;
     
   } catch (error) {

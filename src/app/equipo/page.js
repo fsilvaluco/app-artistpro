@@ -91,17 +91,33 @@ export default function EquipoPage() {
       console.log("🔍 Ejecutando debug completo de Firebase...");
       await debugFirebaseStructure(artistId, userData.uid);
       
-      // Usar la nueva función que obtiene miembros desde roles asignados
-      console.log("👥 Obteniendo miembros del equipo desde roles...");
-      let members = await getTeamMembersFromRoles(artistId);
-      console.log("👥 Miembros desde roles:", members);
+      // Usar la función que obtiene miembros desde contexto de acceso (más confiable)
+      console.log("👥 Obteniendo miembros del equipo desde contexto de acceso...");
+      let members = await getTeamMembersFromAccessContext(artistId, userData.uid);
+      console.log("👥 Miembros desde contexto de acceso:", members);
       
-      // Si no hay miembros desde roles, intentar obtenerlos desde el contexto de acceso
-      if (!members || members.length === 0) {
-        console.log("🔄 No hay miembros desde roles, intentando desde contexto de acceso...");
-        members = await getTeamMembersFromAccessContext(artistId, userData.uid);
-        console.log("👥 Miembros desde contexto de acceso:", members);
+      // Eliminar duplicados basados en userId o email
+      const uniqueMembers = [];
+      const seenIds = new Set();
+      const seenEmails = new Set();
+      
+      for (const member of members) {
+        const userId = member.userId || member.id;
+        const email = member.email;
+        
+        // Verificar si ya hemos visto este usuario (por ID o email)
+        if (!seenIds.has(userId) && !seenEmails.has(email)) {
+          seenIds.add(userId);
+          seenEmails.add(email);
+          uniqueMembers.push(member);
+          console.log("✅ Agregado miembro único:", member.name || member.email);
+        } else {
+          console.log("� Saltando miembro duplicado:", member.name || member.email, "ID:", userId, "Email:", email);
+        }
       }
+      
+      console.log("👥 Lista final sin duplicados:", uniqueMembers.length, uniqueMembers);
+      members = uniqueMembers;
       
       setTeamMembers(members || []);
     } catch (err) {
