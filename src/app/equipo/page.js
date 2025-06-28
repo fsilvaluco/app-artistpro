@@ -579,7 +579,25 @@ export default function EquipoPage() {
                 
                 {artistId && (
                   <div style={{ display: 'flex', gap: '8px' }}>
-                    <PermissionGuard permission={PERMISSIONS.TEAM_INVITE}>
+                    <PermissionGuard 
+                      permission={PERMISSIONS.TEAM_INVITE}
+                      showDisabled={true}
+                      fallback={
+                        <button 
+                          className={styles.inviteButton}
+                          disabled={true}
+                          style={{ 
+                            opacity: 0.5, 
+                            cursor: 'not-allowed',
+                            backgroundColor: '#6b7280',
+                            color: '#9ca3af'
+                          }}
+                          title="Sin permisos para invitar"
+                        >
+                          Invitar
+                        </button>
+                      }
+                    >
                       <button 
                         className={styles.inviteButton}
                         onClick={openInviteModal}
@@ -606,7 +624,50 @@ export default function EquipoPage() {
                       🔧 Debug Permisos
                     </button>
                     
-                    <PermissionGuard permission={PERMISSIONS.ADMIN_SETTINGS}>
+                    <PermissionGuard 
+                      permission={PERMISSIONS.ADMIN_SETTINGS}
+                      showDisabled={true}
+                      fallback={
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button 
+                            className={styles.clearButton}
+                            disabled={true}
+                            style={{
+                              background: '#6b7280',
+                              color: '#9ca3af',
+                              border: 'none',
+                              padding: '8px 16px',
+                              borderRadius: '6px',
+                              fontSize: '14px',
+                              cursor: 'not-allowed',
+                              marginRight: '8px',
+                              opacity: 0.5
+                            }}
+                            title="Sin permisos de administrador"
+                          >
+                            🧹 Limpiar Ejemplo
+                          </button>
+                          
+                          <button 
+                            className={styles.debugButton}
+                            disabled={true}
+                            style={{
+                              background: '#6b7280',
+                              color: '#9ca3af',
+                              border: 'none',
+                              padding: '8px 16px',
+                              borderRadius: '6px',
+                              fontSize: '14px',
+                              cursor: 'not-allowed',
+                              opacity: 0.5
+                            }}
+                            title="Sin permisos de administrador"
+                          >
+                            🔧 Debug Firebase
+                          </button>
+                        </div>
+                      }
+                    >
                       <button 
                         className={styles.clearButton}
                         onClick={handleClearSampleData}
@@ -713,7 +774,29 @@ export default function EquipoPage() {
                           <h3>No hay miembros en el equipo</h3>
                           <p>No se encontraron usuarios con roles asignados para este artista.</p>
                           <div style={{ marginTop: '20px' }}>
-                            <PermissionGuard permission={PERMISSIONS.ADMIN_SETTINGS} showDisabled={false}>
+                            <PermissionGuard 
+                              permission={PERMISSIONS.ADMIN_SETTINGS} 
+                              showDisabled={true}
+                              fallback={
+                                <button 
+                                  disabled={true}
+                                  style={{
+                                    background: '#6b7280',
+                                    color: '#9ca3af',
+                                    border: 'none',
+                                    padding: '12px 24px',
+                                    borderRadius: '8px',
+                                    fontSize: '16px',
+                                    cursor: 'not-allowed',
+                                    marginRight: '12px',
+                                    opacity: 0.5
+                                  }}
+                                  title="Sin permisos de administrador"
+                                >
+                                  🔧 Configurar Mi Acceso
+                                </button>
+                              }
+                            >
                               <button 
                                 onClick={async () => {
                                   console.log("🔧 Configurando acceso automático...");
@@ -787,7 +870,30 @@ export default function EquipoPage() {
                           </div>
                           
                           <div className={styles.memberActions}>
-                            <PermissionGuard permission={PERMISSIONS.TEAM_EDIT}>
+                            <PermissionGuard 
+                              permission={PERMISSIONS.TEAM_EDIT}
+                              showDisabled={true}
+                              fallback={
+                                <div className={styles.menuContainer}>
+                                  <button 
+                                    className={styles.menuButton}
+                                    disabled={true}
+                                    style={{ 
+                                      opacity: 0.5, 
+                                      cursor: 'not-allowed',
+                                      backgroundColor: '#6b7280',
+                                      color: '#9ca3af'
+                                    }}
+                                    title="Sin permisos para administrar"
+                                  >
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                      <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                      <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                    </svg>
+                                  </button>
+                                </div>
+                              }
+                            >
                               <div className={styles.menuContainer} data-member-id={member.id}>
                                 <button 
                                   className={`${styles.menuButton} ${openMenuId === member.id ? styles.menuButtonActive : ''}`}
