@@ -13,7 +13,7 @@ export default function RouteProtection({ children }) {
   const pathname = usePathname();
 
   // Rutas públicas que no requieren autenticación
-  const publicRoutes = ['/'];
+  const publicRoutes = ['/', '/privacy', '/terms', '/data-deletion'];
   
   // Rutas que requieren autenticación pero no acceso a artista
   const authOnlyRoutes = ['/solicitar-acceso'];

@@ -1,3 +1,8 @@
+export const metadata = {
+  title: "Eliminación de Datos - ArtistPro",
+  description: "Instrucciones para eliminar datos personales de ArtistPro",
+};
+
 export default function DataDeletion() {
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', fontFamily: 'Arial, sans-serif' }}>
