@@ -4,10 +4,12 @@ const nextConfig = {
     // Para permitir el build en producción ignorando warnings
     ignoreDuringBuilds: true,
   },
-  // Configuración para despliegue estático
+  // Configuración para EasyPanel/VPS (modo server)
   images: {
     unoptimized: true
-  }
+  },
+  // Remover output estático para VPS
+  // output: 'export' // Comentado para VPS
 };
 
 export default nextConfig;

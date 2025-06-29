@@ -1,0 +1,79 @@
+{
+  "name": "artistpro",
+  "source": {
+    "type": "github",
+    "owner": "fsilvaluco", 
+    "repo": "app-artistpro",
+    "branch": "main",
+    "autoDeploy": true
+  },
+  "build": {
+    "type": "nixpacks",
+    "buildCommand": "npm run build",
+    "startCommand": "npm start",
+    "installCommand": "npm ci"
+  },
+  "domains": [
+    {
+      "host": "artistpro.app",
+      "https": true,
+      "redirect": false
+    },
+    {
+      "host": "www.artistpro.app", 
+      "https": true,
+      "redirect": true,
+      "redirectTo": "artistpro.app"
+    }
+  ],
+  "env": [
+    {
+      "name": "NODE_ENV",
+      "value": "production"
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_API_KEY",
+      "value": "${FIREBASE_API_KEY}"
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN", 
+      "value": "artistpro-2024.firebaseapp.com"
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+      "value": "artistpro-2024" 
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
+      "value": "artistpro-2024.firebasestorage.app"
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+      "value": "${FIREBASE_MESSAGING_SENDER_ID}"
+    },
+    {
+      "name": "NEXT_PUBLIC_FIREBASE_APP_ID",
+      "value": "${FIREBASE_APP_ID}"
+    },
+    {
+      "name": "INSTAGRAM_APP_ID",
+      "value": "${INSTAGRAM_APP_ID}"
+    },
+    {
+      "name": "INSTAGRAM_APP_SECRET",
+      "value": "${INSTAGRAM_APP_SECRET}"
+    }
+  ],
+  "resources": {
+    "requests": {
+      "cpu": "100m",
+      "memory": "256Mi"
+    },
+    "limits": {
+      "cpu": "500m", 
+      "memory": "512Mi"
+    }
+  },
+  "replicas": 1,
+  "port": 3000
+}
