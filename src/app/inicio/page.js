@@ -2,6 +2,7 @@
 
 import Sidebar from "../../components/Sidebar";
 import ProtectedRoute from "../../components/ProtectedRoute";
+import ActivityLog from "../../components/ActivityLog";
 import { useSession } from "../../contexts/SessionContext";
 import { useArtist } from "../../contexts/ArtistContext";
 import { useProject } from "../../contexts/ProjectContext";
@@ -19,16 +20,18 @@ export default function InicioPageWrapper() {
 
 function InicioPage() {
   const { getUserData } = useSession();
-  const { getCurrentArtist, getCurrentArtistName } = useArtist();
+  const { getCurrentArtist, getCurrentArtistName, getCurrentArtistId } = useArtist();
   const { projects, tasks, loading } = useProject();
   const userData = getUserData();
   const currentArtist = getCurrentArtist();
+  const artistId = getCurrentArtistId();
 
   return (
     <Sidebar>
       <Inicio 
         userData={userData} 
         currentArtist={currentArtist}
+        artistId={artistId}
         projects={projects}
         tasks={tasks}
         loading={loading}
@@ -37,7 +40,7 @@ function InicioPage() {
   );
 }
 
-function Inicio({ userData, currentArtist, projects, tasks, loading }) {
+function Inicio({ userData, currentArtist, artistId, projects, tasks, loading }) {
   const { showSuccess, showError, showWarning, showInfo, showProgress, removeNotification } = useNotification();
 
   // Funciones de demostración de notificaciones
@@ -297,6 +300,24 @@ function Inicio({ userData, currentArtist, projects, tasks, loading }) {
           </div>
         </div>
       </div>
+
+      {/* Actividad reciente del equipo */}
+      {currentArtist && artistId && (
+        <div className={styles.recentActivity}>
+          <div className={styles.activityHeader}>
+            <h3>📈 Actividad Reciente del Equipo</h3>
+            <a href="/actividad" className={styles.viewAllLink}>
+              Ver todo →
+            </a>
+          </div>
+          <ActivityLog 
+            artistId={artistId}
+            maxItems={10}
+            showFilters={false}
+            compact={true}
+          />
+        </div>
+      )}
 
       {/* Actividad reciente */}
       {(projects.length > 0 || tasks.length > 0) && (

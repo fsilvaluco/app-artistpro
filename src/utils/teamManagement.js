@@ -13,6 +13,7 @@ import {
   setDoc
 } from "firebase/firestore";
 import { db } from "../app/firebase";
+import { logTeamActivity } from "./activityLogger";
 
 // CRUD para Miembros del Equipo (usando usuarios de la colección users)
 export const addUserToTeam = async (artistId, userId, userToAdd, role, department = '') => {
@@ -36,6 +37,14 @@ export const addUserToTeam = async (artistId, userId, userToAdd, role, departmen
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
+    
+    // Registrar actividad
+    try {
+      const userData = { uid: userId, name: userToAdd.name || userToAdd.email, email: userToAdd.email };
+      await logTeamActivity.memberAdded(userData, artistId, userToAdd.name || userToAdd.email, role);
+    } catch (logError) {
+      console.warn("Error logging team activity:", logError);
+    }
     
     return {
       id: docRef.id,
@@ -159,22 +168,52 @@ export const getTeamMembers = async (artistId, currentUserId) => {
   }
 };
 
-export const updateTeamMember = async (artistId, memberId, updates) => {
+export const updateTeamMember = async (artistId, memberId, updates, currentUserData) => {
   try {
     const memberRef = doc(db, "artists", artistId, "team", memberId);
+    
+    // Obtener datos actuales para comparar cambios
+    const currentMemberDoc = await getDoc(memberRef);
+    const currentMemberData = currentMemberDoc.exists() ? currentMemberDoc.data() : null;
+    
     await updateDoc(memberRef, {
       ...updates,
       updatedAt: serverTimestamp()
     });
+    
+    // Registrar actividad si cambió el rol
+    if (currentMemberData && currentUserData && updates.role && updates.role !== currentMemberData.role) {
+      try {
+        const memberName = currentMemberData.userName || currentMemberData.userEmail || currentMemberData.name || currentMemberData.email || 'Usuario desconocido';
+        await logTeamActivity.roleChanged(currentUserData, artistId, memberName, updates.role);
+      } catch (logError) {
+        console.warn("Error logging team activity:", logError);
+      }
+    }
   } catch (error) {
     console.error("Error updating team member:", error);
     throw error;
   }
 };
 
-export const deleteTeamMember = async (artistId, memberId) => {
+export const deleteTeamMember = async (artistId, memberId, currentUserData) => {
   try {
-    await deleteDoc(doc(db, "artists", artistId, "team", memberId));
+    // Obtener datos del miembro antes de eliminarlo para el log
+    const memberRef = doc(db, "artists", artistId, "team", memberId);
+    const memberDoc = await getDoc(memberRef);
+    const memberData = memberDoc.exists() ? memberDoc.data() : null;
+    
+    await deleteDoc(memberRef);
+    
+    // Registrar actividad
+    if (memberData && currentUserData) {
+      try {
+        const memberName = memberData.userName || memberData.userEmail || memberData.name || memberData.email || 'Usuario desconocido';
+        await logTeamActivity.memberRemoved(currentUserData, artistId, memberName);
+      } catch (logError) {
+        console.warn("Error logging team activity:", logError);
+      }
+    }
   } catch (error) {
     console.error("Error deleting team member:", error);
     throw error;

@@ -277,6 +277,29 @@
   color: var(--text);
 }
 
+.activityHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.activityHeader h3 {
+  margin: 0;
+}
+
+.viewAllLink {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.viewAllLink:hover {
+  color: var(--primary-dark);
+}
+
 .activityGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

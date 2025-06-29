@@ -119,6 +119,9 @@ export default function Sidebar({ children }) {
           <Link href="/equipo" className={styles.link}>
             Equipo
           </Link>
+          <Link href="/actividad" className={styles.link}>
+            Actividad
+          </Link>
           <Link href="/notas" className={styles.link}>
             Notas
           </Link>
