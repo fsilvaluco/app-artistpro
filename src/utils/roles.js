@@ -57,6 +57,7 @@ export const PERMISSIONS = {
   EPK_EXPORT: 'epk.export',
   
   // Administración del sistema
+  ADMIN_ACCESS: 'admin.access',      // Acceso al panel de administración
   ADMIN_USERS: 'admin.users',
   ADMIN_REQUESTS: 'admin.requests',
   ADMIN_SETTINGS: 'admin.settings',
@@ -97,6 +98,7 @@ export const ACCESS_LEVEL_PERMISSIONS = {
     PERMISSIONS.EPK_VIEW,
     PERMISSIONS.EPK_EDIT,
     PERMISSIONS.EPK_EXPORT,
+    PERMISSIONS.ADMIN_ACCESS,     // Acceso al panel de administración
     PERMISSIONS.ADMIN_USERS,
     PERMISSIONS.ADMIN_REQUESTS,
     PERMISSIONS.NOTES_VIEW,

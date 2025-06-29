@@ -3,12 +3,14 @@
 import { useEffect, useState } from "react";
 import { useSession } from "../contexts/SessionContext";
 import { useAccess } from "../contexts/AccessContext";
+import { usePermissions } from "../contexts/PermissionsContext";
 import { useRouter, usePathname } from "next/navigation";
 
 export default function RouteProtection({ children }) {
   const [isChecking, setIsChecking] = useState(true);
   const { user, loading: sessionLoading, isAuthenticated } = useSession();
   const { hasAccess, loading: accessLoading, accessChecked } = useAccess();
+  const { isAdmin, isSuperAdmin, loading: permissionsLoading } = usePermissions();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -17,14 +19,36 @@ export default function RouteProtection({ children }) {
   
   // Rutas que requieren autenticación pero no acceso a artista
   const authOnlyRoutes = ['/solicitar-acceso'];
+  
+  // Rutas de administración que solo requieren permisos de admin
+  const adminRoutes = ['/admin'];
 
   useEffect(() => {
     // Esperar a que se complete la verificación de sesión y acceso
-    if (sessionLoading || accessLoading || !accessChecked) {
+    if (sessionLoading || accessLoading || !accessChecked || permissionsLoading) {
+      console.log(`🔄 RouteProtection: Esperando carga - Session: ${sessionLoading}, Access: ${accessLoading}, AccessChecked: ${accessChecked}, Permissions: ${permissionsLoading}`);
       return;
     }
 
+    // Para rutas de admin, esperar un poco más para asegurar que los permisos se carguen
     const currentPath = pathname;
+    const isAdminRoute = adminRoutes.includes(currentPath);
+    
+    if (isAdminRoute && !isAuthenticated()) {
+      console.log("❌ Ruta admin sin autenticación, redirigiendo al login");
+      router.push('/');
+      setIsChecking(false);
+      return;
+    }
+
+    // Si es ruta de admin y el usuario está autenticado, permitir acceso inmediato
+    // Los permisos se verificarán en la propia página
+    if (isAdminRoute && isAuthenticated()) {
+      console.log("✅ Acceso a ruta admin permitido, verificación en página");
+      setIsChecking(false);
+      return;
+    }
+
     const isPublicRoute = publicRoutes.includes(currentPath);
     const isAuthOnlyRoute = authOnlyRoutes.includes(currentPath);
     
@@ -33,6 +57,10 @@ export default function RouteProtection({ children }) {
     console.log("🛡️ Tiene acceso:", hasAccess);
     console.log("🛡️ Es ruta pública:", isPublicRoute);
     console.log("🛡️ Es ruta solo auth:", isAuthOnlyRoute);
+    console.log("🛡️ Es ruta admin:", isAdminRoute);
+    console.log("🛡️ Es admin:", isAdmin());
+    console.log("🛡️ Es super admin:", isSuperAdmin());
+    console.log("🛡️ Permisos cargando:", permissionsLoading);
 
     // Si no está autenticado y no es una ruta pública
     if (!isAuthenticated() && !isPublicRoute) {

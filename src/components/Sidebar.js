@@ -4,14 +4,17 @@ import Link from "next/link";
 import { useState } from "react";
 import { useSession } from "../contexts/SessionContext";
 import { useTheme } from "../contexts/ThemeContext";
+import { useLogo } from "../hooks/useLogo";
 
 export default function Sidebar({ children }) {
   const [open, setOpen] = useState({ 
     analisis: false,
     gestionProyectos: false 
   });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const { logout, getUserData } = useSession();
   const { theme, setTheme } = useTheme();
+  const { logoUrl } = useLogo();
   const userData = getUserData();
 
   const handleLogout = () => {
@@ -20,16 +23,60 @@ export default function Sidebar({ children }) {
     }
   };
 
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  const handleLinkClick = () => {
+    // Cerrar sidebar en móvil al hacer click en un enlace
+    setSidebarOpen(false);
+  };
+
   return (
     <div className={styles.layout}>
-      <aside className={styles.sidebar}>
-        <div className={styles.logoSection}>
-          <Image src="/next.svg" alt="ArtistPro logo" width={36} height={36} />
-          <span className={styles.logoText}>ArtistPro</span>
+      {/* Header móvil */}
+      <header className={styles.mobileHeader}>
+        <button
+          className={styles.hamburgerButton}
+          onClick={toggleSidebar}
+          aria-label="Abrir menú"
+        >
+          ☰
+        </button>
+        <div className={styles.mobileLogoContainer}>
+          <img src={logoUrl} alt="ArtistPro" width={24} height={24} />
+          <span className={styles.mobileLogoText}>ArtistPro</span>
         </div>
+        <div></div>
+      </header>
+
+      {/* Overlay para cerrar menú en móvil */}
+      <div 
+        className={`${styles.overlay} ${sidebarOpen ? styles.overlayVisible : ''}`}
+        onClick={closeSidebar}
+      ></div>
+
+      {/* Sidebar */}
+      <aside className={`${styles.sidebar} ${sidebarOpen ? styles.sidebarVisible : ''}`}>
+        <div className={styles.logoSection}>
+          <img src={logoUrl} alt="ArtistPro logo" width={36} height={36} />
+          <span className={styles.logoText}>ArtistPro</span>
+          <button
+            className={styles.closeButton}
+            onClick={closeSidebar}
+            aria-label="Cerrar menú"
+          >
+            ✕
+          </button>
+        </div>
+
         <nav className={styles.nav}>
-          <Link href="/inicio" className={styles.link}>
-            Inicio
+          <Link href="/inicio" className={styles.link} onClick={handleLinkClick}>
+            📊 Inicio
           </Link>
           
           <div className={styles.menuGroup}>
@@ -37,7 +84,7 @@ export default function Sidebar({ children }) {
               className={styles.menuButton}
               onClick={() => setOpen((o) => ({ ...o, gestionProyectos: !o.gestionProyectos }))}
             >
-              Gestión de Proyectos
+              📁 Gestión de Proyectos
               <span
                 className={
                   open.gestionProyectos ? styles.arrowDown : styles.arrowRight
@@ -49,26 +96,30 @@ export default function Sidebar({ children }) {
                 <Link
                   href="/gestion-proyectos/proyectos"
                   className={styles.link}
+                  onClick={handleLinkClick}
                 >
-                  Proyectos
+                  🎯 Proyectos
                 </Link>
                 <Link
                   href="/gestion-proyectos/actividades"
                   className={styles.link}
+                  onClick={handleLinkClick}
                 >
-                  Actividades
+                  📝 Actividades
                 </Link>
                 <Link
-                  href="/gestion-proyectos/kanban"
+                  href="/kanban"
                   className={styles.link}
+                  onClick={handleLinkClick}
                 >
-                  Vista Kanban
+                  📋 Kanban
                 </Link>
                 <Link
                   href="/gestion-proyectos/gantt"
                   className={styles.link}
+                  onClick={handleLinkClick}
                 >
-                  Vista Gantt
+                  📊 Gantt
                 </Link>
               </div>
             )}
@@ -79,11 +130,9 @@ export default function Sidebar({ children }) {
               className={styles.menuButton}
               onClick={() => setOpen((o) => ({ ...o, analisis: !o.analisis }))}
             >
-              Análisis de rendimiento
+              📈 Análisis
               <span
-                className={
-                  open.analisis ? styles.arrowDown : styles.arrowRight
-                }
+                className={open.analisis ? styles.arrowDown : styles.arrowRight}
               ></span>
             </button>
             {open.analisis && (
@@ -91,41 +140,60 @@ export default function Sidebar({ children }) {
                 <Link
                   href="/analisis/rrss"
                   className={styles.link}
+                  onClick={handleLinkClick}
                 >
-                  Rendimiento RRSS
+                  📱 Redes Sociales
+                </Link>
+                <Link
+                  href="/analisis/radar"
+                  className={styles.link}
+                  onClick={handleLinkClick}
+                >
+                  🎧 Radar Artistas
                 </Link>
                 <Link
                   href="/analisis/eventos"
                   className={styles.link}
+                  onClick={handleLinkClick}
                 >
-                  Eventos
+                  🎪 Eventos
                 </Link>
                 <Link
                   href="/analisis/prensa"
                   className={styles.link}
+                  onClick={handleLinkClick}
                 >
-                  Notas de prensa
+                  📰 Notas de prensa
                 </Link>
                 <Link
                   href="/analisis/plataformas"
                   className={styles.link}
+                  onClick={handleLinkClick}
                 >
-                  Rendimiento Plataformas Digitales
+                  🎵 Rendimiento Plataformas
                 </Link>
               </div>
             )}
           </div>
 
-          <Link href="/equipo" className={styles.link}>
-            Equipo
+          <Link href="/equipo" className={styles.link} onClick={handleLinkClick}>
+            👥 Equipo
           </Link>
-          <Link href="/notas" className={styles.link}>
-            Notas
+          
+          <Link href="/blog" className={styles.link} onClick={handleLinkClick}>
+            📝 Blog
           </Link>
-          <Link href="/permisos" className={styles.link}>
-            Permisos
+          <Link href="/comunicados" className={styles.link} onClick={handleLinkClick}>
+            📢 Comunicados
+          </Link>
+          <Link href="/epk" className={styles.link} onClick={handleLinkClick}>
+            📦 EPK
+          </Link>
+          <Link href="/notas" className={styles.link} onClick={handleLinkClick}>
+            📝 Notas
           </Link>
         </nav>
+
         <div className={styles.themeSection}>
           <div className={styles.userSection}>
             {userData && (
@@ -143,7 +211,7 @@ export default function Sidebar({ children }) {
                       {(userData.displayName || userData.email).charAt(0).toUpperCase()}
                     </div>
                   )}
-                  <div className={styles.userText}>
+                  <div className={styles.userDetails}>
                     <span className={styles.userName}>
                       {userData.displayName || userData.email}
                     </span>

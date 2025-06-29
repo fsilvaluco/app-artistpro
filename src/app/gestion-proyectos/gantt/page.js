@@ -236,7 +236,8 @@ export default function GanttPage() {
     const statusColors = {
       'todo': '#6b7280',
       'in_progress': '#f59e0b',
-      'completed': '#10b981'
+      'completed': '#10b981',
+      'discarded': '#ef4444'
     };
     
     return statusColors[item.status] || '#6b7280';
@@ -254,19 +255,31 @@ export default function GanttPage() {
 
   // Función para calcular progreso
   const calculateProgress = (item) => {
-    if (item.status === 'completed') return 100;
-    if (item.status === 'in_progress') {
-      // Si tiene fechas, calcular progreso basado en tiempo transcurrido
-      if (item.startDate && item.dueDate) {
-        const now = new Date();
-        const start = new Date(item.startDate);
-        const end = new Date(item.dueDate);
-        const total = end.getTime() - start.getTime();
-        const elapsed = now.getTime() - start.getTime();
-        return Math.min(Math.max((elapsed / total) * 100, 0), 90); // Max 90% si no está completado
+    // Si es una tarea individual
+    if (item.status) {
+      if (item.status === 'completed') return 100;
+      if (item.status === 'in_progress') {
+        // Si tiene fechas, calcular progreso basado en tiempo transcurrido
+        if (item.startDate && item.dueDate) {
+          const now = new Date();
+          const start = new Date(item.startDate);
+          const end = new Date(item.dueDate);
+          const total = end.getTime() - start.getTime();
+          const elapsed = now.getTime() - start.getTime();
+          return Math.min(Math.max((elapsed / total) * 100, 0), 90); // Max 90% si no está completado
+        }
+        return 50; // Progreso por defecto para en proceso
       }
-      return 50; // Progreso por defecto para en proceso
+      return 0;
     }
+    
+    // Si es un proyecto, calcular progreso basado en las tareas
+    if (item.tasks && item.tasks.length > 0) {
+      const completedTasks = item.tasks.filter(task => task.status === 'completed').length;
+      const totalTasks = item.tasks.length;
+      return Math.round((completedTasks / totalTasks) * 100);
+    }
+    
     return 0;
   };
 
@@ -414,6 +427,7 @@ export default function GanttPage() {
                     <option value="todo">Por hacer</option>
                     <option value="in_progress">En proceso</option>
                     <option value="completed">Completado</option>
+                    <option value="discarded">Descartado</option>
                   </select>
                 </div>
                 
@@ -554,7 +568,7 @@ export default function GanttPage() {
                             )}
                             <span className={`${styles.statusBadge} ${styles[task.status]}`}>
                               {task.status === 'todo' ? 'Por hacer' : 
-                               task.status === 'in_progress' ? 'En proceso' : 'Completado'}
+                               task.status === 'in_progress' ? 'En proceso' : task.status === 'completed' ? 'Completado' : 'Descartado'}
                             </span>
                           </div>
                         </div>
@@ -603,7 +617,7 @@ export default function GanttPage() {
                             )}
                             <span className={`${styles.statusBadge} ${styles[task.status]}`}>
                               {task.status === 'todo' ? 'Por hacer' : 
-                               task.status === 'in_progress' ? 'En proceso' : 'Completado'}
+                               task.status === 'in_progress' ? 'En proceso' : task.status === 'completed' ? 'Completado' : 'Descartado'}
                             </span>
                           </div>
                         </div>
@@ -682,7 +696,7 @@ export default function GanttPage() {
                   <div className={styles.tooltipStatus}>
                     <span className={`${styles.statusBadge} ${styles[hoveredItem.status]}`}>
                       {hoveredItem.status === 'todo' ? 'Por hacer' : 
-                       hoveredItem.status === 'in_progress' ? 'En proceso' : 'Completado'}
+                       hoveredItem.status === 'in_progress' ? 'En proceso' : hoveredItem.status === 'completed' ? 'Completado' : 'Descartado'}
                     </span>
                   </div>
                 )}
@@ -740,7 +754,7 @@ export default function GanttPage() {
                       <label>Estado:</label>
                       <span className={`${styles.statusBadge} ${styles[selectedItem.status]}`}>
                         {selectedItem.status === 'todo' ? 'Por hacer' : 
-                         selectedItem.status === 'in_progress' ? 'En proceso' : 'Completado'}
+                         selectedItem.status === 'in_progress' ? 'En proceso' : selectedItem.status === 'completed' ? 'Completado' : 'Descartado'}
                       </span>
                     </div>
                   )}

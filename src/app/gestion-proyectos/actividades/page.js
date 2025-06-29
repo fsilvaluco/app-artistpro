@@ -15,7 +15,8 @@ import styles from './page.module.css';
 const TASK_STATUSES = {
   TODO: { id: 'todo', name: 'Por Hacer', color: '#6b7280' },
   IN_PROGRESS: { id: 'in_progress', name: 'En Proceso', color: '#f59e0b' },
-  COMPLETED: { id: 'completed', name: 'Completado', color: '#10b981' }
+  COMPLETED: { id: 'completed', name: 'Completado', color: '#10b981' },
+  DISCARDED: { id: 'discarded', name: 'Descartado', color: '#ef4444' }
 };
 
 const TASK_PRIORITIES = {

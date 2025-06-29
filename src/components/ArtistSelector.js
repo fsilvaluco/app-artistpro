@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useArtist } from "../contexts/ArtistContext";
 import { useAccess } from "../contexts/AccessContext";
 import { useSession } from "../contexts/SessionContext";
+import { usePermissions } from "../contexts/PermissionsContext";
 import { useRouter, usePathname } from "next/navigation";
 import styles from "./ArtistSelector.module.css";
 
@@ -18,13 +19,14 @@ export default function ArtistSelector() {
 
   const { isAuthenticated } = useSession();
   const { hasAccess: userHasAccess } = useAccess();
+  const { isAdmin, isSuperAdmin } = usePermissions();
   const router = useRouter();
   const pathname = usePathname();
 
   const [isOpen, setIsOpen] = useState(false);
 
   // No mostrar el selector en ciertas rutas
-  const hiddenRoutes = ['/solicitar-acceso', '/'];
+  const hiddenRoutes = ['/solicitar-acceso', '/', '/admin'];
   if (hiddenRoutes.includes(pathname)) {
     return null;
   }
@@ -50,6 +52,14 @@ export default function ArtistSelector() {
     setIsOpen(false);
   };
 
+  // Deduplica artistas por ID para evitar errores de renderizado
+  const uniqueArtists = artists.reduce((acc, artist) => {
+    if (!acc.find(a => a.id === artist.id)) {
+      acc.push(artist);
+    }
+    return acc;
+  }, []);
+
   if (loading) {
     return (
       <div className={styles.artistSelector}>
@@ -61,7 +71,8 @@ export default function ArtistSelector() {
   }
 
   // Si no tiene acceso, mostrar botón para solicitar acceso
-  if (!userHasAccess) {
+  // EXCEPTO si es admin/super admin
+  if (!userHasAccess && !(isAdmin() || isSuperAdmin())) {
     return (
       <div className={styles.artistSelector}>
         <button
@@ -105,7 +116,7 @@ export default function ArtistSelector() {
           <div className={styles.dropdownHeader}>
             <span className={styles.dropdownTitle}>Artistas Accesibles</span>
           </div>
-          {artists.length === 0 ? (
+          {uniqueArtists.length === 0 ? (
             <div className={styles.noArtists}>
               <p>No tienes acceso a ningún artista</p>
               <button 
@@ -116,7 +127,7 @@ export default function ArtistSelector() {
               </button>
             </div>
           ) : (
-            artists.map((artist) => (
+            uniqueArtists.map((artist) => (
               <button
                 key={artist.id}
                 className={`${styles.artistOption} ${

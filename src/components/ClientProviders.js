@@ -32,6 +32,40 @@ function ThemeHandler() {
   return null;
 }
 
+// Componente para aplicar favicon personalizado
+function FaviconHandler() {
+  useEffect(() => {
+    // Aplicar favicon personalizado si existe
+    try {
+      const faviconData = localStorage.getItem('artistpro_favicon');
+      if (faviconData) {
+        const favicon = JSON.parse(faviconData);
+        
+        // Remover favicon existente
+        const existingFavicon = document.querySelector('link[rel*="icon"]');
+        if (existingFavicon) {
+          existingFavicon.remove();
+        }
+
+        // Crear nuevo elemento de favicon
+        const newFavicon = document.createElement('link');
+        newFavicon.rel = 'icon';
+        newFavicon.type = 'image/x-icon';
+        newFavicon.href = favicon.data;
+        
+        // Agregar al head
+        document.head.appendChild(newFavicon);
+        
+        console.log('✅ Favicon personalizado aplicado al cargar');
+      }
+    } catch (error) {
+      console.error('Error aplicando favicon personalizado:', error);
+    }
+  }, []);
+
+  return null;
+}
+
 export default function ClientProviders({ children }) {
   const [mounted, setMounted] = useState(false);
 
@@ -66,6 +100,7 @@ export default function ClientProviders({ children }) {
                 <ProjectProvider>
                   <NotificationProvider>
                     <SocialMediaProvider>
+                      {/* RouteProtection con lógica corregida - HABILITADO */}
                       <RouteProtection>
                         <ArtistSelector />
                         {children}

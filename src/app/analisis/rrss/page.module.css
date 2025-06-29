@@ -318,45 +318,254 @@
   color: #9ca3af;
 }
 
-/* Responsive */
+/* Responsive optimizado para móviles */
 @media (max-width: 768px) {
   .container {
-    padding: 16px;
+    padding: 16px 12px;
+    max-width: 100%;
   }
   
   .header {
     flex-direction: column;
     gap: 16px;
     align-items: stretch;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
   }
   
   .header h1 {
     font-size: 1.5rem;
     text-align: center;
+    margin-bottom: 8px;
+  }
+  
+  .header p {
+    text-align: center;
+    font-size: 0.9rem;
+  }
+  
+  .addButton {
+    font-size: 14px;
+    padding: 14px 20px;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    align-items: center;
   }
   
   .placeholder {
-    padding: 32px 24px;
+    padding: 32px 20px;
+    margin: 0 -4px;
   }
   
   .icon {
     font-size: 3rem;
+    margin-bottom: 20px;
+  }
+  
+  .placeholder h2 {
+    font-size: 1.25rem;
+    margin-bottom: 12px;
+  }
+  
+  .placeholder p {
+    font-size: 0.9rem;
+    margin-bottom: 14px;
+  }
+  
+  .placeholder ul {
+    margin: 20px 0;
+    padding-left: 16px;
+  }
+  
+  .placeholder li {
+    font-size: 0.9rem;
+    margin-bottom: 6px;
+  }
+  
+  .note {
+    padding: 12px;
+    font-size: 0.85rem;
+    margin-top: 20px;
   }
   
   .metricsGrid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
   }
   
   .metricCard {
-    padding: 16px;
+    padding: 16px 12px;
+  }
+  
+  .metricCard h3 {
+    font-size: 0.8rem;
+    margin-bottom: 6px;
   }
   
   .metricValue {
     font-size: 1.5rem;
+    margin-bottom: 2px;
+  }
+  
+  .metricChange {
+    font-size: 0.75rem;
   }
   
   .postsGrid {
     grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .postCard {
+    margin: 0 -4px;
+  }
+  
+  .postInfo {
+    padding: 12px;
+  }
+  
+  .postType {
+    font-size: 0.75rem;
+    margin-bottom: 6px;
+  }
+  
+  .postCaption {
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+  
+  .postStats {
+    font-size: 0.75rem;
+  }
+  
+  .tabs {
+    margin-bottom: 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .tab {
+    padding: 12px 16px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    min-width: fit-content;
+  }
+  
+  .permissionFallback {
+    padding: 32px 20px;
+    margin: 0 -4px;
+  }
+  
+  .permissionFallback span {
+    font-size: 1.5rem;
+    margin-bottom: 12px;
+  }
+  
+  .permissionFallback p {
+    font-size: 0.9rem;
+  }
+  
+  .loadingState {
+    padding: 32px 20px;
+  }
+  
+  .loadingState .spinner {
+    width: 28px;
+    height: 28px;
+    border-width: 2px;
+    margin-bottom: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 12px 8px;
+  }
+  
+  .header h1 {
+    font-size: 1.25rem;
+  }
+  
+  .addButton {
+    font-size: 13px;
+    padding: 12px 16px;
+  }
+  
+  .placeholder {
+    padding: 24px 16px;
+  }
+  
+  .icon {
+    font-size: 2.5rem;
+  }
+  
+  .metricsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .metricCard {
+    padding: 12px 8px;
+  }
+  
+  .metricValue {
+    font-size: 1.25rem;
+  }
+  
+  .metricCard h3 {
+    font-size: 0.75rem;
+  }
+  
+  .tab {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .postImage {
+    height: 180px;
+  }
+}
+
+/* Mejoras de accesibilidad y UX táctil */
+@media (max-width: 768px) {
+  .addButton:hover {
+    transform: none;
+  }
+  
+  .addButton:active {
+    transform: scale(0.98);
+  }
+  
+  .metricCard:hover {
+    transform: none;
+  }
+  
+  .metricCard:active {
+    transform: scale(0.98);
+  }
+  
+  .postCard:hover {
+    transform: none;
+  }
+  
+  .postCard:active {
+    transform: scale(0.98);
+  }
+  
+  .tab:hover {
+    background: var(--bg-secondary);
+  }
+  
+  .tab:active {
+    background: var(--border-color);
   }
 }

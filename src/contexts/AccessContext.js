@@ -51,7 +51,7 @@ export function AccessProvider({ children }) {
       // Si no tiene acceso a ningún artista y está en una ruta protegida, redirigir
       if (accessible.length === 0) {
         const currentPath = window.location.pathname;
-        const publicPaths = ['/solicitar-acceso', '/solicitud-acceso-flujo', '/'];
+        const publicPaths = ['/solicitar-acceso', '/solicitud-acceso-flujo', '/', '/admin'];
         
         if (!publicPaths.includes(currentPath)) {
           console.log("❌ Usuario sin acceso, redirigiendo a solicitar-acceso desde:", currentPath);

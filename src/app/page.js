@@ -8,11 +8,13 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "../contexts/SessionContext";
 import { useTheme } from "../contexts/ThemeContext";
+import { useLogo } from "../hooks/useLogo";
 
 export default function Home() {
   const router = useRouter();
   const { user, loading } = useSession();
   const { theme, setTheme } = useTheme();
+  const { logoUrl } = useLogo();
 
   // Redirigir si ya está autenticado
   useEffect(() => {
@@ -89,7 +91,7 @@ export default function Home() {
   return (
     <div className={styles.page} style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'var(--bg)' }}>
       <header style={{ marginBottom: 32, display: 'flex', alignItems: 'center', gap: 12 }}>
-        <Image src="/next.svg" alt="ArtistPro logo" width={40} height={40} />
+        <img src={logoUrl} alt="ArtistPro logo" width={40} height={40} />
         <span style={{ fontWeight: 700, fontSize: 28, letterSpacing: 1, color: 'var(--text)' }}>ArtistPro</span>
         <select
           aria-label="Tema"

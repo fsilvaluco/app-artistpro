@@ -2,6 +2,7 @@ import {
   collection, 
   addDoc, 
   getDocs, 
+  getDoc,
   doc, 
   updateDoc, 
   deleteDoc, 
@@ -144,17 +145,18 @@ export const grantInitialAdminAccess = async (userId, userEmail, userName) => {
     const artistsSnapshot = await getDocs(collection(db, "artists"));
     const grantedAccess = [];
 
-    // Crear solicitudes aprobadas automáticamente para todos los artistas
-    for (const artistDoc of artistsSnapshot.docs) {
+    // Crear un array de promesas para verificación paralela
+    const accessPromises = artistsSnapshot.docs.map(async (artistDoc) => {
       const artistData = artistDoc.data();
       const artistId = artistDoc.id;
 
       // Verificar si ya tiene acceso (evitar duplicados)
       const hasAccess = await checkUserArtistAccess(userId, artistId);
+      
       if (!hasAccess) {
         try {
           // Crear solicitud aprobada automáticamente
-          const docRef = await addDoc(collection(db, "artistRequests"), {
+          const requestData = {
             userId,
             userEmail,
             userName: userName || 'Admin',
@@ -167,30 +169,41 @@ export const grantInitialAdminAccess = async (userId, userEmail, userName) => {
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp(),
             isInitialAdmin: true
-          });
+          };
 
-          grantedAccess.push({
+          await addDoc(collection(db, "artistRequests"), requestData);
+
+          return {
             id: artistId,
             name: artistData.name || 'Artista sin nombre',
             approvedAt: new Date()
-          });
-
-          console.log("✅ Acceso otorgado al artista:", artistData.name);
+          };
         } catch (error) {
           console.error("Error otorgando acceso al artista:", artistData.name, error);
+          return null;
         }
       } else {
-        console.log("ℹ️ Usuario ya tiene acceso al artista:", artistData.name);
-        grantedAccess.push({
+        console.log("✅ Usuario ya tiene acceso al artista:", artistData.name);
+        return {
           id: artistId,
           name: artistData.name || 'Artista sin nombre',
-          approvedAt: new Date()
-        });
+          approvedAt: new Date(),
+          alreadyExists: true
+        };
       }
-    }
+    });
 
-    console.log(`🎉 Proceso completado. Acceso garantizado a ${grantedAccess.length} artistas`);
-    return grantedAccess;
+    // Esperar a que todas las verificaciones/creaciones se completen
+    const results = await Promise.all(accessPromises);
+    
+    // Filtrar resultados válidos
+    const validResults = results.filter(result => result !== null);
+    const newAccess = validResults.filter(result => !result.alreadyExists);
+    const existingAccess = validResults.filter(result => result.alreadyExists);
+
+    console.log(`✅ Acceso procesado: ${newAccess.length} nuevos, ${existingAccess.length} existentes`);
+    
+    return validResults;
   } catch (error) {
     console.error("Error granting initial admin access:", error);
     throw error;
@@ -237,7 +250,7 @@ export const rejectArtistRequest = async (requestId, adminUserId = 'admin', reas
 // Verificar si el usuario tiene acceso a un artista
 export const checkUserArtistAccess = async (userId, artistId) => {
   try {
-    const approvedRequests = await query(
+    const approvedRequests = query(
       collection(db, "artistRequests"),
       where("userId", "==", userId),
       where("artistId", "==", artistId),
@@ -245,7 +258,13 @@ export const checkUserArtistAccess = async (userId, artistId) => {
     );
     
     const querySnapshot = await getDocs(approvedRequests);
-    return !querySnapshot.empty;
+    const hasAccess = !querySnapshot.empty;
+    
+    if (hasAccess) {
+      console.log(`✅ Usuario ${userId} ya tiene acceso al artista ${artistId}`);
+    }
+    
+    return hasAccess;
   } catch (error) {
     console.error("Error checking user artist access:", error);
     return false;
@@ -277,13 +296,43 @@ export const getUserAccessibleArtists = async (userId, userEmail) => {
       const data = doc.data();
       artistIds.push({
         id: data.artistId,
-        name: data.artistName,
+        name: data.artistName, // Nombre temporal, se actualizará abajo
         approvedAt: data.approvedAt
       });
     });
+
+    // Filtrar solo artistas activos y obtener nombres actualizados
+    const activeArtists = [];
+    for (const artistId of artistIds) {
+      try {
+        const artistDoc = await getDoc(doc(db, "artists", artistId.id));
+        
+        if (artistDoc.exists()) {
+          const artistData = artistDoc.data();
+          // Solo incluir si el artista está activo (o si no tiene el campo isActive, asumir activo)
+          if (artistData.isActive !== false) {
+            activeArtists.push({
+              id: artistId.id,
+              name: artistData.name, // Usar el nombre actual de la colección artists
+              approvedAt: artistId.approvedAt,
+              isActive: artistData.isActive,
+              genre: artistData.genre,
+              country: artistData.country,
+              avatar: artistData.avatar || artistData.photo
+            });
+          } else {
+            console.log(`⏸️ Artista inactivo excluido: ${artistData.name}`);
+          }
+        }
+      } catch (error) {
+        console.error(`Error verificando estado del artista ${artistId.name}:`, error);
+        // En caso de error, incluir el artista por defecto
+        activeArtists.push(artistId);
+      }
+    }
     
-    console.log(`🎨 Usuario tiene acceso a ${artistIds.length} artistas:`, artistIds.map(a => a.name));
-    return artistIds;
+    console.log(`🎨 Usuario tiene acceso a ${activeArtists.length} artistas activos (de ${artistIds.length} totales):`, activeArtists.map(a => a.name));
+    return activeArtists;
   } catch (error) {
     console.error("Error getting user accessible artists:", error);
     return [];
@@ -333,6 +382,38 @@ export const grantSuperAdminRole = async (userId, userEmail, userName) => {
     return true;
   } catch (error) {
     console.error("Error assigning super admin role:", error);
+    throw error;
+  }
+};
+
+// Sincronizar nombre de artista en solicitudes cuando se actualiza
+export const syncArtistNameInRequests = async (artistId, newName) => {
+  try {
+    console.log(`🔄 Sincronizando nombre del artista ${artistId} a "${newName}"`);
+    
+    // Buscar todas las solicitudes de este artista
+    const requestsQuery = query(
+      collection(db, "artistRequests"),
+      where("artistId", "==", artistId)
+    );
+    
+    const querySnapshot = await getDocs(requestsQuery);
+    const updatePromises = [];
+    
+    querySnapshot.forEach((requestDoc) => {
+      const updatePromise = updateDoc(requestDoc.ref, {
+        artistName: newName,
+        updatedAt: serverTimestamp()
+      });
+      updatePromises.push(updatePromise);
+    });
+    
+    await Promise.all(updatePromises);
+    console.log(`✅ Sincronizados ${updatePromises.length} registros de solicitudes para ${newName}`);
+    
+    return updatePromises.length;
+  } catch (error) {
+    console.error("Error sincronizando nombre del artista:", error);
     throw error;
   }
 };
