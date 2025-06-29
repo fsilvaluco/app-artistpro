@@ -11,6 +11,7 @@ import { ProjectProvider } from "../contexts/ProjectContext";
 import { UserProvider } from "../contexts/UserContext";
 import { NotificationProvider } from "../contexts/NotificationContext";
 import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
+import { SocialMediaProvider } from "../contexts/SocialMediaContext";
 import NotificationContainer from "./NotificationContainer";
 
 // Componente para manejar el tema del documento
@@ -64,11 +65,13 @@ export default function ClientProviders({ children }) {
               <UserProvider>
                 <ProjectProvider>
                   <NotificationProvider>
-                    <RouteProtection>
-                      <ArtistSelector />
-                      {children}
-                      <NotificationContainer />
-                    </RouteProtection>
+                    <SocialMediaProvider>
+                      <RouteProtection>
+                        <ArtistSelector />
+                        {children}
+                        <NotificationContainer />
+                      </RouteProtection>
+                    </SocialMediaProvider>
                   </NotificationProvider>
                 </ProjectProvider>
               </UserProvider>
