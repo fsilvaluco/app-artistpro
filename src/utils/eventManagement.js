@@ -12,6 +12,7 @@ import {
   orderBy,
   Timestamp 
 } from 'firebase/firestore';
+import { logEventActivity } from './activityLogger';
 
 // Estados posibles para eventos
 export const EVENT_STATES = {
@@ -42,7 +43,7 @@ export const EVENT_STATE_COLORS = {
 };
 
 // Función para crear un nuevo evento
-export const createEvent = async (artistId, eventData, createdBy) => {
+export const createEvent = async (artistId, eventData, createdBy, userData = null) => {
   try {
     if (!artistId || !eventData) {
       throw new Error('Artist ID y datos del evento son requeridos');
@@ -65,6 +66,11 @@ export const createEvent = async (artistId, eventData, createdBy) => {
     const docRef = await addDoc(eventsRef, newEvent);
     
     console.log('✅ Evento creado con ID:', docRef.id);
+    
+    // Registrar actividad
+    if (userData) {
+      await logEventActivity.created(userData, artistId, eventData.title || eventData.name);
+    }
     
     return {
       id: docRef.id,
@@ -139,7 +145,7 @@ export const getEvents = async (artistId) => {
 };
 
 // Función para actualizar un evento
-export const updateEvent = async (eventId, eventData) => {
+export const updateEvent = async (eventId, eventData, userData = null, artistId = null) => {
   try {
     if (!eventId || !eventData) {
       throw new Error('Event ID y datos del evento son requeridos');
@@ -154,6 +160,11 @@ export const updateEvent = async (eventId, eventData) => {
 
     await updateDoc(eventRef, updatedData);
     
+    // Registrar actividad
+    if (userData && artistId) {
+      await logEventActivity.updated(userData, artistId, eventData.title || eventData.name);
+    }
+    
     return {
       id: eventId,
       ...updatedData
@@ -165,7 +176,7 @@ export const updateEvent = async (eventId, eventData) => {
 };
 
 // Función para eliminar un evento
-export const deleteEvent = async (eventId) => {
+export const deleteEvent = async (eventId, eventName, userData = null, artistId = null) => {
   try {
     if (!eventId) {
       throw new Error('Event ID es requerido');
@@ -173,6 +184,11 @@ export const deleteEvent = async (eventId) => {
 
     const eventRef = doc(db, 'events', eventId);
     await deleteDoc(eventRef);
+    
+    // Registrar actividad
+    if (userData && artistId && eventName) {
+      await logEventActivity.deleted(userData, artistId, eventName);
+    }
     
     return true;
   } catch (error) {

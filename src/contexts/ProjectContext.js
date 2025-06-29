@@ -13,6 +13,7 @@ import {
   updateNestedTask,
   deleteNestedTask
 } from "../utils/nestedStructure";
+import { logProjectActivity, logTaskActivity } from "../utils/activityLogger";
 
 // Crear el contexto
 const ProjectContext = createContext(null);
@@ -154,6 +155,10 @@ export function ProjectProvider({ children }) {
       const newProject = await createNestedProject(artistId, user.uid, projectData);
       setProjects(prev => [newProject, ...prev]);
       console.log("✅ Proyecto creado:", newProject.title);
+      
+      // Registrar actividad
+      await logProjectActivity.created(user, artistId, newProject.title);
+      
       return newProject;
     } catch (error) {
       console.error("Error creating project:", error);
@@ -175,6 +180,10 @@ export function ProjectProvider({ children }) {
         )
       );
       console.log("✅ Proyecto actualizado:", projectId);
+      
+      // Registrar actividad
+      const projectName = projects.find(p => p.id === projectId)?.title || "Proyecto";
+      await logProjectActivity.updated(user, artistId, projectName);
     } catch (error) {
       console.error("Error updating project:", error);
       throw error;
@@ -192,6 +201,10 @@ export function ProjectProvider({ children }) {
       // También eliminar tareas asociadas del estado local
       setTasks(prev => prev.filter(task => task.projectId !== projectId));
       console.log("✅ Proyecto eliminado:", projectId);
+      
+      // Registrar actividad
+      const projectName = projects.find(p => p.id === projectId)?.title || "Proyecto";
+      await logProjectActivity.deleted(user, artistId, projectName);
     } catch (error) {
       console.error("Error deleting project:", error);
       throw error;
@@ -210,6 +223,10 @@ export function ProjectProvider({ children }) {
       const newTask = await createNestedTask(artistId, user.uid, taskData);
       setTasks(prev => [newTask, ...prev]);
       console.log("✅ Tarea creada:", newTask.title);
+      
+      // Registrar actividad
+      await logTaskActivity.created(user, artistId, newTask.title);
+      
       return newTask;
     } catch (error) {
       console.error("Error creating task:", error);
@@ -231,6 +248,15 @@ export function ProjectProvider({ children }) {
         )
       );
       console.log("✅ Tarea actualizada:", taskId);
+      
+      // Registrar actividad
+      const taskName = tasks.find(t => t.id === taskId)?.title || "Tarea";
+      await logTaskActivity.updated(user, artistId, taskName);
+      
+      // Si se marcó como completada, registrar actividad especial
+      if (updates.status === 'completed') {
+        await logTaskActivity.completed(user, artistId, taskName);
+      }
     } catch (error) {
       console.error("Error updating task:", error);
       throw error;
@@ -245,6 +271,10 @@ export function ProjectProvider({ children }) {
       await deleteNestedTask(artistId, taskId);
       setTasks(prev => prev.filter(task => task.id !== taskId));
       console.log("✅ Tarea eliminada:", taskId);
+      
+      // Registrar actividad
+      const taskName = tasks.find(t => t.id === taskId)?.title || "Tarea";
+      await logTaskActivity.deleted(user, artistId, taskName);
     } catch (error) {
       console.error("Error deleting task:", error);
       throw error;

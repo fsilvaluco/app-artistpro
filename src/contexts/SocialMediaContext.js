@@ -13,6 +13,7 @@ import {
 import { useSession } from './SessionContext';
 import { useArtist } from './ArtistContext';
 import { useNotification } from './NotificationContext';
+import { logSocialMediaActivity } from '../utils/activityLogger';
 
 // Firebase imports para guardar tokens
 import { 
@@ -183,7 +184,8 @@ export const SocialMediaProvider = ({ children }) => {
       
       showSuccess(`Instagram conectado como @${profile.username}`);
       
-    } catch (error) {
+      // Registrar actividad
+      await logSocialMediaActivity.connected(userData, artistId, 'Instagram');
       console.error('Error handling Instagram callback:', error);
       showError('Error conectando Instagram: ' + error.message);
       localStorage.removeItem('instagram_auth_state');
@@ -235,6 +237,9 @@ export const SocialMediaProvider = ({ children }) => {
       }
       
       showSuccess(`${provider} desconectado correctamente`);
+      
+      // Registrar actividad
+      await logSocialMediaActivity.disconnected(userData, artistId, provider);
       
     } catch (error) {
       console.error('Error disconnecting account:', error);

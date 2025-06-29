@@ -7,11 +7,13 @@ import { useNotification } from "../../contexts/NotificationContext";
 import ProtectedRoute from "../../components/ProtectedRoute";
 import PermissionGuard from "../../components/PermissionGuard";
 import Sidebar from "../../components/Sidebar";
+import ActivityLog from "../../components/ActivityLog";
 import { getTeamMembers, createTeamMember, deleteTeamMember, addUserToTeam, clearTeamSampleData, getTeamMembersFromRoles, ensureUserHasRole, debugFirebaseStructure, ensureUserExists, diagnoseUserState, getTeamMembersFromAccessContext, debugArtistRequests, diagnosisPermissions, TEAM_ROLES, getRoleLabel } from "../../utils/teamManagement";
 import { getArtistRequests, approveArtistRequest, rejectArtistRequest, REQUEST_STATUS } from "../../utils/artistRequests";
 import { updateArtistRequestWithRole } from "../../utils/roleManagement";
 import { PERMISSIONS, ROLES, ROLE_LABELS, ROLE_COLORS, ACCESS_LEVELS, ACCESS_LEVEL_LABELS, ACCESS_LEVEL_COLORS } from "../../utils/roles";
 import UserSelector from "../../components/UserSelector";
+import { generateSampleActivities } from "../../utils/activityLogger";
 import styles from "./page.module.css";
 
 export default function EquipoPage() {
@@ -27,7 +29,7 @@ export default function EquipoPage() {
   const [editingMember, setEditingMember] = useState(null);
   const [openMenuId, setOpenMenuId] = useState(null);
   const [selectedRoles, setSelectedRoles] = useState({}); // Para roles en solicitudes
-  const [activeTab, setActiveTab] = useState('team'); // 'team' o 'requests'
+  const [activeTab, setActiveTab] = useState('team'); // 'team', 'requests', o 'activity'
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -733,7 +735,10 @@ export default function EquipoPage() {
                     <span className={styles.badge}>{pendingRequests.length}</span>
                   )}
                 </button>
-                <button className={styles.tab}>
+                <button 
+                  className={`${styles.tab} ${activeTab === 'activity' ? styles.active : ''}`}
+                  onClick={() => setActiveTab('activity')}
+                >
                   Actividad
                 </button>
                 <button className={styles.tab}>
@@ -1013,6 +1018,48 @@ export default function EquipoPage() {
                           ))}
                         </div>
                       )}
+                    </div>
+                  )}
+
+                  {/* Tab de Actividad */}
+                  {activeTab === 'activity' && (
+                    <div className={styles.section}>
+                      <div className={styles.activitySection}>
+                        <div className={styles.activityHeader}>
+                          <div>
+                            <h2>Actividad del Equipo</h2>
+                            <p>Registro de todas las acciones realizadas por los miembros del equipo</p>
+                          </div>
+                          {process.env.NODE_ENV === 'development' && (
+                            <button
+                              onClick={async () => {
+                                try {
+                                  await generateSampleActivities(userData, artistId);
+                                  showSuccess('Actividades de ejemplo generadas');
+                                } catch (error) {
+                                  showError('Error generando actividades: ' + error.message);
+                                }
+                              }}
+                              className={styles.sampleButton}
+                            >
+                              🎯 Generar Actividades de Ejemplo
+                            </button>
+                          )}
+                        </div>
+                        
+                        {artistId ? (
+                          <ActivityLog 
+                            artistId={artistId}
+                            maxItems={50}
+                            showFilters={true}
+                            compact={false}
+                          />
+                        ) : (
+                          <div className={styles.emptyState}>
+                            <p>Selecciona un artista para ver las actividades</p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </>

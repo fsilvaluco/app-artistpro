@@ -125,27 +125,6 @@
   letter-spacing: 0.5px;
 }
 
-.recentActivity {
-  background: var(--card);
-  border-radius: 12px;
-  padding: 24px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border);
-}
-
-.recentActivity h2 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 16px;
-  color: var(--text);
-}
-
-.recentActivity p {
-  color: var(--text2);
-  line-height: 1.6;
-  font-style: italic;
-}
-
 /* Loading spinner */
 .loading {
   display: flex;
@@ -265,114 +244,6 @@
   margin-bottom: 4px;
 }
 
-/* Recent Activity */
-.recentActivity {
-  margin-top: 32px;
-}
-
-.recentActivity h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: var(--text);
-}
-
-.activityHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.activityHeader h3 {
-  margin: 0;
-}
-
-.viewAllLink {
-  color: var(--primary);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 500;
-  transition: color 0.2s ease;
-}
-
-.viewAllLink:hover {
-  color: var(--primary-dark);
-}
-
-.activityGrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 16px;
-}
-
-.activityCard {
-  padding: 16px;
-  background: var(--card);
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  transition: all 0.2s ease;
-}
-
-.activityCard:hover {
-  border-color: var(--primary);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.activityHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.activityType {
-  font-size: 0.8rem;
-  color: var(--muted-foreground);
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.activityDate {
-  font-size: 0.8rem;
-  color: var(--muted-foreground);
-}
-
-.activityCard h4 {
-  margin: 0 0 12px 0;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text);
-}
-
-.taskStatus {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.statusBadge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  color: white;
-}
-
-.statusBadge.todo {
-  background: #6b7280;
-}
-
-.statusBadge.in_progress {
-  background: #f59e0b;
-}
-
-.statusBadge.completed {
-  background: #10b981;
-}
-
 /* Empty state */
 .emptyState {
   text-align: center;
@@ -408,8 +279,4 @@
 
 [data-theme="dark"] .card:hover {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-}
-
-[data-theme="dark"] .recentActivity {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }

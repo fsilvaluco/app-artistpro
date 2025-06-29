@@ -2,7 +2,6 @@
 
 import Sidebar from "../../components/Sidebar";
 import ProtectedRoute from "../../components/ProtectedRoute";
-import ActivityLog from "../../components/ActivityLog";
 import { useSession } from "../../contexts/SessionContext";
 import { useArtist } from "../../contexts/ArtistContext";
 import { useProject } from "../../contexts/ProjectContext";
@@ -20,18 +19,16 @@ export default function InicioPageWrapper() {
 
 function InicioPage() {
   const { getUserData } = useSession();
-  const { getCurrentArtist, getCurrentArtistName, getCurrentArtistId } = useArtist();
+  const { getCurrentArtist, getCurrentArtistName } = useArtist();
   const { projects, tasks, loading } = useProject();
   const userData = getUserData();
   const currentArtist = getCurrentArtist();
-  const artistId = getCurrentArtistId();
 
   return (
     <Sidebar>
       <Inicio 
         userData={userData} 
         currentArtist={currentArtist}
-        artistId={artistId}
         projects={projects}
         tasks={tasks}
         loading={loading}
@@ -40,7 +37,7 @@ function InicioPage() {
   );
 }
 
-function Inicio({ userData, currentArtist, artistId, projects, tasks, loading }) {
+function Inicio({ userData, currentArtist, projects, tasks, loading }) {
   const { showSuccess, showError, showWarning, showInfo, showProgress, removeNotification } = useNotification();
 
   // Funciones de demostración de notificaciones
@@ -300,70 +297,6 @@ function Inicio({ userData, currentArtist, artistId, projects, tasks, loading })
           </div>
         </div>
       </div>
-
-      {/* Actividad reciente del equipo */}
-      {currentArtist && artistId && (
-        <div className={styles.recentActivity}>
-          <div className={styles.activityHeader}>
-            <h3>📈 Actividad Reciente del Equipo</h3>
-            <a href="/actividad" className={styles.viewAllLink}>
-              Ver todo →
-            </a>
-          </div>
-          <ActivityLog 
-            artistId={artistId}
-            maxItems={10}
-            showFilters={false}
-            compact={true}
-          />
-        </div>
-      )}
-
-      {/* Actividad reciente */}
-      {(projects.length > 0 || tasks.length > 0) && (
-        <div className={styles.recentActivity}>
-          <h3>📈 Actividad Reciente</h3>
-          <div className={styles.activityGrid}>
-            {/* Proyectos recientes */}
-            {projects.slice(0, 3).map(project => (
-              <div key={project.id} className={styles.activityCard}>
-                <div className={styles.activityHeader}>
-                  <span className={styles.activityType}>📁 Proyecto</span>
-                  <span className={styles.activityDate}>
-                    {project.createdAt ? new Date(project.createdAt.seconds * 1000).toLocaleDateString() : 'Reciente'}
-                  </span>
-                </div>
-                <h4>{project.title}</h4>
-                {project.category && (
-                  <CategoryBadge categoryId={project.category} variant="light" size="small" />
-                )}
-              </div>
-            ))}
-            
-            {/* Tareas recientes */}
-            {tasks.slice(0, 3).map(task => (
-              <div key={task.id} className={styles.activityCard}>
-                <div className={styles.activityHeader}>
-                  <span className={styles.activityType}>📋 Tarea</span>
-                  <span className={styles.activityDate}>
-                    {task.createdAt ? new Date(task.createdAt.seconds * 1000).toLocaleDateString() : 'Reciente'}
-                  </span>
-                </div>
-                <h4>{task.title}</h4>
-                <div className={styles.taskStatus}>
-                  <span className={`${styles.statusBadge} ${styles[task.status]}`}>
-                    {task.status === 'todo' ? 'Por hacer' : 
-                     task.status === 'in_progress' ? 'En proceso' : 'Completado'}
-                  </span>
-                  {task.category && (
-                    <CategoryBadge categoryId={task.category} variant="light" size="small" />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Estado vacío cuando no hay artista seleccionado */}
       {!currentArtist && (
