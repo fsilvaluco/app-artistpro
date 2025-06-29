@@ -20,6 +20,12 @@
   font-weight: 700;
 }
 
+.header p {
+  color: #6b7280;
+  margin: 8px 0 0 0;
+  font-size: 1rem;
+}
+
 .addButton {
   background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
   color: white;
@@ -95,6 +101,223 @@
   font-size: 0.9rem;
 }
 
+/* Estilos para sección de análisis */
+.analyticsSection {
+  margin-top: 32px;
+}
+
+.analyticsSection h2 {
+  color: #111827;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.metricCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.metricCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.metricCard h3 {
+  color: #374151;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metricValue {
+  color: #111827;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.metricChange {
+  color: #10b981;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.metricChange.negative {
+  color: #ef4444;
+}
+
+.permissionFallback {
+  text-align: center;
+  padding: 48px;
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+  border-radius: 12px;
+  border: 1px solid #fbbf24;
+}
+
+.permissionFallback span {
+  color: #92400e;
+  font-size: 2rem;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.permissionFallback p {
+  color: #78350f;
+  font-size: 1rem;
+  margin: 0;
+}
+
+.recentPosts {
+  margin-top: 32px;
+}
+
+.recentPosts h3 {
+  color: #111827;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.postsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.postCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.postCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.postImage {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.postInfo {
+  padding: 16px;
+}
+
+.postType {
+  color: #6b7280;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.postCaption {
+  color: #374151;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  margin-bottom: 12px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.postStats {
+  display: flex;
+  justify-content: space-between;
+  color: #6b7280;
+  font-size: 0.8rem;
+}
+
+.loadingState {
+  text-align: center;
+  padding: 48px;
+  color: #6b7280;
+}
+
+.loadingState .spinner {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  border: 3px solid #e5e7eb;
+  border-radius: 50%;
+  border-top-color: #ec4899;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Estilos para tabs */
+.tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px 8px 0 0;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #6b7280;
+  font-size: 0.9rem;
+  position: relative;
+}
+
+.tab:hover {
+  background: #f9fafb;
+  color: #374151;
+}
+
+.tab.active {
+  background: white;
+  color: #ec4899;
+  border-bottom: 2px solid #ec4899;
+  font-weight: 600;
+}
+
+.tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #9ca3af;
+}
+
+.tab:disabled:hover {
+  background: transparent;
+  color: #9ca3af;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .container {
@@ -118,5 +341,22 @@
   
   .icon {
     font-size: 3rem;
+  }
+  
+  .metricsGrid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+  }
+  
+  .metricCard {
+    padding: 16px;
+  }
+  
+  .metricValue {
+    font-size: 1.5rem;
+  }
+  
+  .postsGrid {
+    grid-template-columns: 1fr;
   }
 }
