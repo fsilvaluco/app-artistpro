@@ -180,33 +180,6 @@ function Inicio({ userData, currentArtist, projects, tasks, loading }) {
           >
             🔔 Ver Demostración de Notificaciones
           </button>
-          
-          <button 
-            onClick={() => {
-              console.log("👤 Información del usuario:");
-              console.log("Email:", userData?.email);
-              console.log("UID:", userData?.uid);
-              console.log("Display Name:", userData?.displayName);
-              alert(`Tu email actual es: ${userData?.email || 'No disponible'}`);
-            }}
-            style={{
-              background: 'linear-gradient(135deg, #48bb78 0%, #38a169 100%)',
-              color: 'white',
-              border: 'none',
-              padding: '12px 24px',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '14px',
-              fontWeight: '500',
-              boxShadow: '0 4px 12px rgba(72, 187, 120, 0.3)',
-              transition: 'transform 0.2s ease',
-              marginRight: '10px'
-            }}
-            onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
-            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
-          >
-            👤 Ver Mi Email
-          </button>
 
           <button 
             onClick={() => {
