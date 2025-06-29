@@ -8,6 +8,10 @@
   margin-bottom: 32px;
   padding-bottom: 20px;
   border-bottom: 2px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
 }
 
 .headerContent h1 {
@@ -22,6 +26,31 @@
   margin: 0;
   font-size: 1rem;
   line-height: 1.5;
+}
+
+.sampleButton {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sampleButton:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+.sampleButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .content {
@@ -70,6 +99,9 @@
   .header {
     margin-bottom: 24px;
     padding-bottom: 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
   }
   
   .headerContent h1 {
@@ -78,6 +110,10 @@
   
   .headerContent p {
     font-size: 0.9rem;
+  }
+  
+  .sampleButton {
+    align-self: flex-start;
   }
   
   .noArtist {

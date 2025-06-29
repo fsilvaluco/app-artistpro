@@ -7,6 +7,7 @@ import ProtectedRoute from "../../components/ProtectedRoute";
 import PermissionGuard from "../../components/PermissionGuard";
 import Sidebar from "../../components/Sidebar";
 import ActivityLog from "../../components/ActivityLog";
+import { generateSampleActivities } from "../../utils/sampleActivities";
 import { PERMISSIONS } from "../../utils/roles";
 import styles from "./page.module.css";
 
@@ -29,12 +30,31 @@ export default function ActividadPageWrapper() {
 }
 
 function ActividadPage() {
+  const [isGenerating, setIsGenerating] = useState(false);
   const { getUserData } = useSession();
   const { getCurrentArtist, getCurrentArtistId } = useArtist();
   
   const userData = getUserData();
   const currentArtist = getCurrentArtist();
   const artistId = getCurrentArtistId();
+
+  const handleGenerateSample = async () => {
+    if (!userData || !artistId) return;
+    
+    setIsGenerating(true);
+    try {
+      await generateSampleActivities(userData, artistId);
+      // Mostrar mensaje de éxito
+      setTimeout(() => {
+        alert('Actividades de ejemplo generadas. Actualiza la página en unos segundos para verlas.');
+      }, 8000);
+    } catch (error) {
+      console.error('Error generando actividades:', error);
+      alert('Error generando actividades de ejemplo');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <Sidebar>
@@ -44,6 +64,16 @@ function ActividadPage() {
             <h1>📈 Actividad del Equipo</h1>
             <p>Registro completo de todas las acciones realizadas en {currentArtist?.name || 'este proyecto'}</p>
           </div>
+          {/* Botón para generar datos de ejemplo (solo en desarrollo) */}
+          {process.env.NODE_ENV === 'development' && artistId && (
+            <button
+              onClick={handleGenerateSample}
+              disabled={isGenerating}
+              className={styles.sampleButton}
+            >
+              {isGenerating ? 'Generando...' : '🎭 Generar Actividades de Ejemplo'}
+            </button>
+          )}
         </div>
 
         <div className={styles.content}>
