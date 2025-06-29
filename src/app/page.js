@@ -131,6 +131,26 @@ export default function Home() {
         </button>
         {/* Aquí más adelante se agregarán otros botones de login */}
       </main>
+      <footer style={{ 
+        marginTop: 32, 
+        textAlign: 'center', 
+        fontSize: 14, 
+        color: 'var(--text2)',
+        display: 'flex',
+        gap: 16,
+        flexWrap: 'wrap',
+        justifyContent: 'center'
+      }}>
+        <a href="/privacy" style={{ color: 'var(--text2)', textDecoration: 'none' }}>
+          Política de Privacidad
+        </a>
+        <a href="/terms" style={{ color: 'var(--text2)', textDecoration: 'none' }}>
+          Términos de Servicio
+        </a>
+        <a href="/data-deletion" style={{ color: 'var(--text2)', textDecoration: 'none' }}>
+          Eliminación de Datos
+        </a>
+      </footer>
     </div>
   );
 }
